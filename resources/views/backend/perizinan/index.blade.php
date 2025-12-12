@@ -1,0 +1,220 @@
+@extends('backend.app')
+@section('content')
+    <style>
+        @media (max-width: 768px) {
+
+            #absensi-container .card,
+            #absensi-container .card-body {
+                background: none !important;
+                box-shadow: none !important;
+                padding: 0 !important;
+                border: none !important;
+            }
+
+            #absensi-container .table-striped>tbody>tr {
+                background-color: #ffffff !important;
+            }
+
+            #absensi-container .table-striped>tbody>tr:nth-of-type(odd) {
+                background-color: #ffffff !important;
+            }
+
+            #absensi-container table td:first-child {
+                display: none !important;
+            }
+
+            #absensi-container table thead {
+                display: none;
+            }
+
+            #absensi-container table.dataTable.dtr-inline.collapsed>tbody>tr>td.child {
+                border: none !important;
+                padding: 5px 10px !important;
+                background: transparent !important;
+            }
+
+            #absensi-container table.dataTable td {
+                border: none !important;
+            }
+
+            #absensi-container table.dataTable tbody td {
+                padding: 4px 10px !important;
+            }
+
+            #absensi-container table tbody tr {
+                display: block;
+                margin-bottom: 15px;
+                border: 1px solid #ddd;
+                padding: 10px;
+                border-radius: 10px;
+                background: #f8f9fa !important;
+            }
+
+            #absensi-container table tbody td {
+                display: block !important;
+                padding: 5px 10px !important;
+            }
+
+            #absensi-container table tbody td:before {
+                content: attr(data-label);
+                font-weight: bold;
+            }
+
+            #absensi-container table tbody td:last-child:before,
+            #absensi-container table tbody td:nth-last-child(2):before {
+                content: "" !important;
+            }
+
+            #absensi-container .fab-add {
+                position: fixed;
+                bottom: 20px;
+                right: 20px;
+                width: 55px;
+                height: 55px;
+                border-radius: 50%;
+                background-color: #0d6efd;
+                color: white;
+                border: none;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-size: 28px;
+                box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.3);
+                z-index: 999;
+            }
+        }
+    </style>
+
+    <div class="row" style="margin-top: -200px;">
+        <div class="col-md-12 text-white">
+            <div class="row">
+                <div class="col-12 col-xl-8 mb-xl-0">
+                    <h3 class="font-weight-bold">Data Perizinan</h3>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row" id="absensi-container">
+        <div class="col-12 mt-4">
+            <div class="card w-100">
+                <div class="card-body">
+
+                    <button type="button" class="btn btn-primary btn-md mb-4 d-none d-md-inline-block" data-toggle="modal"
+                        data-target="#modal">
+                        Tambah
+                    </button>
+
+                    <button type="button" class="fab-add d-md-none" data-toggle="modal" data-target="#modal">
+                        <i class="bi bi-plus-lg"></i>
+                    </button>
+
+                    <div class="input-group mb-3">
+                        <input type="text" class="form-control" id="searchInput" placeholder="Cari Perizinan ...">
+                        <div class="input-group-append">
+                            <button style="height: 38px;" class="input-group-text" id="btnCari">
+                                <i class="bi bi-search"></i> &nbsp; Cari
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="table-responsive">
+                        <table id="myTable" class="table table-striped" style="width: 100%;">
+                            <thead class="bg-info text-white">
+                                <tr>
+                                    <th>No</th>
+                                    <th>User</th>
+                                    <th>Tanggal</th>
+                                    <th>Jenis</th>
+                                    <th width="25%">Keterangan</th>
+                                    <th>File</th>
+                                    <th width="5%">Aksi</th>
+                                </tr>
+                            </thead>
+                        </table>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ========================= -->
+    <!-- Modal -->
+    <!-- ========================= -->
+    <div class="modal fade" id="modal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+
+                <form id="form" enctype="multipart/form-data">
+                    @csrf
+
+                    <input type="hidden" id="id" name="id">
+
+                    <div class="modal-header">
+                        <h5 class="modal-title">Form Perizinan</h5>
+                        <button type="button" class="close" data-dismiss="modal">
+                            <span>&times;</span>
+                        </button>
+                    </div>
+
+                    <div class="modal-body">
+
+                        <div class="form-group">
+                            <label>User</label>
+                            <select class="form-control" name="user_id" id="user_id">
+                                <option value="">-- Pilih User --</option>
+                                @php
+                                    $user = DB::table('users')->get();
+                                @endphp
+                                @foreach ($user as $u)
+                                    <option value="{{ $u->id }}">{{ $u->name }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Tanggal Awal</label>
+                            <input type="date" class="form-control" name="tanggal_awal" id="tanggal_awal" max="{{ date('Y') }}-12-31">
+                        </div>
+
+                        <div class="form-group">
+                            <label>Tanggal Akhir</label>
+                            <input type="date" class="form-control" name="tanggal_akhir" id="tanggal_akhir" max="{{ date('Y') }}-12-31">
+                        </div>
+
+                        <div class="form-group">
+                            <label>Jenis</label>
+                            <select class="form-control" name="jenis" id="jenis">
+                                <option>Perjalanan Dinas</option>
+                                <option>Pekerjaan Diluar Kantor</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Keterangan</label>
+                            <textarea class="form-control" name="keterangan" id="keterangan"></textarea>
+                        </div>
+
+                        <div class="form-group">
+                            <label>File (Opsional)</label>
+                            <input type="file" class="form-control" name="file">
+                            <div id="previewFile" class="mt-2"></div>
+                        </div>
+
+                    </div>
+
+                    <div class="modal-footer p-3">
+                        <button type="button" class="btn btn-danger btn-sm" data-dismiss="modal">Close</button>
+                        <button id="tombol_kirim" class="btn btn-primary btn-sm">Submit</button>
+                    </div>
+
+                </form>
+
+            </div>
+        </div>
+    </div>
+@endsection
+@push('script')
+    <script src="{{ asset('js/backend/perizinan/index.js') }}"></script>
+@endpush

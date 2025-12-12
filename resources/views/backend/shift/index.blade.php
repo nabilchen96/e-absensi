@@ -1,0 +1,216 @@
+@extends('backend.app')
+@section('content')
+    <style>
+        @media (max-width: 768px) {
+
+            /* SCOPED — hanya bekerja untuk halaman dengan #absensi-container */
+            #absensi-container .card,
+            #absensi-container .card-body {
+                background: none !important;
+                box-shadow: none !important;
+                padding: 0 !important;
+                border: none !important;
+            }
+
+            #absensi-container .table-striped>tbody>tr {
+                background-color: #ffffff !important;
+            }
+
+            #absensi-container .table-striped>tbody>tr:nth-of-type(odd) {
+                background-color: #ffffff !important;
+            }
+
+            #absensi-container table td:first-child {
+                display: none !important;
+            }
+
+            #absensi-container table thead {
+                display: none;
+            }
+
+            #absensi-container table.dataTable.dtr-inline.collapsed>tbody>tr>td.child {
+                border: none !important;
+                padding: 5px 10px !important;
+                background: transparent !important;
+            }
+
+            #absensi-container table.dataTable td {
+                border: none !important;
+            }
+
+            #absensi-container table.dataTable tbody td {
+                padding: 4px 10px !important;
+            }
+
+            #absensi-container table tbody tr {
+                display: block;
+                margin-bottom: 15px;
+                border: 1px solid #ddd;
+                padding: 10px;
+                border-radius: 10px;
+                background: #f8f9fa !important;
+            }
+
+            #absensi-container table tbody td {
+                display: block !important;
+                padding: 5px 10px !important;
+            }
+
+            #absensi-container table tbody td:before {
+                content: attr(data-label);
+                font-weight: bold;
+            }
+
+            #absensi-container .aksi-btn i {
+                font-size: 1.1rem !important;
+            }
+
+            #absensi-container table tbody td:last-child:before,
+            #absensi-container table tbody td:nth-last-child(2):before {
+                content: "" !important;
+            }
+
+            #absensi-container .fab-add {
+                position: fixed;
+                bottom: 20px;
+                right: 20px;
+                width: 55px;
+                height: 55px;
+                border-radius: 50%;
+                background-color: #0d6efd;
+                color: white;
+                border: none;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-size: 28px;
+                box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.3);
+                z-index: 999;
+            }
+        }
+    </style>
+    <div class="row" style="margin-top: -200px;">
+        <div class="col-md-12 text-white">
+            <div class="row">
+                <div class="col-12 col-xl-8 mb-xl-0">
+                    <h3 class="font-weight-bold">Data Shift</h3>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-12 mt-4">
+            <div class="card w-100">
+                <div class="card-body">
+
+                    <button type="button" class="btn btn-primary btn-md mb-4 d-none d-md-inline-block" data-toggle="modal"
+                        data-target="#modal">
+                        Tambah
+                    </button>
+
+                    <button type="button" class="fab-add d-md-none" data-toggle="modal" data-target="#modal">
+                        <i class="bi bi-plus-lg"></i>
+                    </button>
+
+                    <div class="input-group mb-3">
+                        <input type="text" class="form-control" id="searchInput" placeholder="Cari Shift ...">
+                        <div class="input-group-append">
+                            <button style="height: 38px;" class="input-group-text" id="btnCari">
+                                <i class="bi bi-search"></i> &nbsp; Cari
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="table-responsive">
+                        <table id="myTable" class="table table-striped" style="width: 100%;">
+                            <thead class="bg-info text-white">
+                                <tr>
+                                    <th>No</th>
+                                    <th>Nama Shift</th>
+                                    <th>Jam Masuk</th>
+                                    <th>Jam Pulang</th>
+                                    <th>Mulai Scan Masuk</th>
+                                    <th>Akhir Scan Masuk</th>
+                                    <th>Mulai Scan Pulang</th>
+                                    <th>Akhir Scan Pulang</th>
+                                    <th>Aksi</th>
+                                </tr>
+                            </thead>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal -->
+    <div class="modal fade" id="modal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <form id="form">
+                    <div class="modal-header p-3">
+                        <h5 class="modal-title m-2">Form Shift</h5>
+                    </div>
+
+                    <div class="modal-body">
+
+                        <input type="hidden" name="id" id="id">
+
+                        <div class="form-group">
+                            <label>Nama Shift</label>
+                            <input type="text" name="nama_shift" id="nama_shift" class="form-control form-control-sm"
+                                required>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Jam Masuk</label>
+                            <input type="time" name="jam_masuk" id="jam_masuk" class="form-control form-control-sm"
+                                required>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Jam Pulang</label>
+                            <input type="time" name="jam_pulang" id="jam_pulang" class="form-control form-control-sm"
+                                required>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Mulai Scan Masuk</label>
+                            <input type="time" name="mulai_scan_masuk" id="mulai_scan_masuk"
+                                class="form-control form-control-sm" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Akhir Scan Masuk</label>
+                            <input type="time" name="akhir_scan_masuk" id="akhir_scan_masuk"
+                                class="form-control form-control-sm" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Mulai Scan Pulang</label>
+                            <input type="time" name="mulai_scan_pulang" id="mulai_scan_pulang"
+                                class="form-control form-control-sm" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Akhir Scan Pulang</label>
+                            <input type="time" name="akhir_scan_pulang" id="akhir_scan_pulang"
+                                class="form-control form-control-sm" required>
+                        </div>
+
+                    </div>
+
+                    <div class="modal-footer p-3">
+                        <button type="button" class="btn btn-danger btn-sm" data-dismiss="modal">Close</button>
+                        <button id="tombol_kirim" class="btn btn-primary btn-sm">Submit</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+@endsection
+
+@push('script')
+    <script src="{{ asset('js/backend/shift/index.js') }}"></script>
+@endpush

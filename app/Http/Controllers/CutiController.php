@@ -1,0 +1,155 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use Illuminate\Http\Request;
+use App\Models\Perizinan;
+use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
+
+class CutiController extends Controller
+{
+    public function index()
+    {
+        return view('backend.cuti.index');
+    }
+
+    public function data(Request $request)
+    {
+        $keyword = $request->keyword;
+
+        $query = DB::table('perizinans')
+            ->join('users', 'users.id', '=', 'perizinans.user_id')
+            ->select(
+                'perizinans.*',
+                'users.name as user_name'
+            )
+            ->where('jenis', [
+                'Cuti Tahunan',
+                'Cuti Bersalin',
+                'Cuti Alasan Penting',
+                'Cuti Sakit',
+                'Tugas Belajar',
+                'Cuti Diluar Tanggungan Negara',
+                'Cuti Besar',
+            ])
+            ->orderBy('tanggal', 'DESC');
+
+        if ($keyword) {
+            $query->where(function ($q) use ($keyword) {
+                $q->where('users.name', 'like', "%$keyword%")
+                  ->orWhere('jenis', 'like', "%$keyword%");
+            });
+        }
+
+        return response()->json(['data' => $query->get()]);
+    }
+
+    public function store(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'user_id' => 'required',
+            'tanggal_awal' => 'required|date',
+            'tanggal_akhir' => 'required|date|after_or_equal:tanggal_awal',
+            'jenis' => 'required',
+            'keterangan' => 'nullable',
+            'file' => 'nullable|file|max:2048'
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'responCode' => 0,
+                'respon' => $validator->errors(),
+            ]);
+        }
+
+        // Upload file
+        $fileName = null;
+        if ($request->hasFile('file')) {
+            $fileName = $request->file('file')->store('perizinan', 'public');
+        }
+
+        // Looping tanggal
+        $start = strtotime($request->tanggal_awal);
+        $end   = strtotime($request->tanggal_akhir);
+
+        while ($start <= $end) {
+            Perizinan::create([
+                'user_id' => $request->user_id,
+                'tanggal' => date('Y-m-d', $start),
+                'jenis' => $request->jenis,
+                'keterangan' => $request->keterangan,
+                'file' => $fileName,
+            ]);
+
+            // Tambah 1 hari
+            $start = strtotime("+1 day", $start);
+        }
+
+        return response()->json([
+            'responCode' => 1,
+            'respon' => 'Perizinan berhasil disimpan untuk rentang tanggal'
+        ]);
+    }
+
+    public function update(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'id' => 'required',
+            'user_id' => 'required',
+            'tanggal' => 'required|date',
+            'jenis' => 'required|in:izin,cuti,dinas_luar',
+            'file' => 'nullable|file|max:2048'
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'responCode' => 0,
+                'respon' => $validator->errors(),
+            ]);
+        }
+
+        $izin = Perizinan::find($request->id);
+
+        // Upload file baru jika ada
+        $fileName = $izin->file;
+
+        if ($request->hasFile('file')) {
+            if ($fileName) {
+                Storage::disk('public')->delete($fileName);
+            }
+
+            $fileName = $request->file('file')->store('perizinan', 'public');
+        }
+
+        $izin->update([
+            'user_id' => $request->user_id,
+            'tanggal' => $request->tanggal,
+            'jenis' => $request->jenis,
+            'keterangan' => $request->keterangan,
+            'file' => $fileName,
+        ]);
+
+        return response()->json([
+            'responCode' => 1,
+            'respon' => 'Perizinan berhasil diperbarui'
+        ]);
+    }
+
+    public function delete(Request $request)
+    {
+        $izin = Perizinan::find($request->id);
+
+        if ($izin->file) {
+            Storage::disk('public')->delete($izin->file);
+        }
+
+        $izin->delete();
+
+        return response()->json([
+            'responCode' => 1,
+            'respon' => 'Perizinan berhasil dihapus'
+        ]);
+    }
+}
