@@ -81,7 +81,8 @@ class ScheduleController extends Controller
         $val = Validator::make($request->all(), [
             'id_user' => 'required',
             'id_shift' => 'required',
-            'tanggal' => 'required|date',
+            'tanggal_dari' => 'required|date',
+            'tanggal_ke' => 'required|date',
         ]);
 
         if ($val->fails()) {
@@ -91,7 +92,20 @@ class ScheduleController extends Controller
             ]);
         }
 
-        Schedule::create($request->all());
+        // Looping tanggal
+        $start = strtotime($request->tanggal_dari);
+        $end   = strtotime($request->tanggal_ke);
+
+        while ($start <= $end) {
+            Schedule::create([
+                'id_user' => $request->id_user,
+                'id_shift' => $request->id_shift,
+                'tanggal' => date('Y-m-d', $start),
+            ]);
+
+            // Tambah 1 hari
+            $start = strtotime("+1 day", $start);
+        }
 
         return response()->json([
             'responCode' => 1,

@@ -98,7 +98,7 @@ function getData() {
                                href="javascript:void(0)" data-bs-id="${row.id}">
                                <i class="bi bi-grid"></i> Edit
                             </a>
-                            <a class="dropdown-item text-danger" onclick="hapusData(${row.id})">
+                            <a href="#" class="dropdown-item text-danger" onclick="hapusData(${row.id})">
                                <i class="bi bi-trash"></i> Hapus
                             </a>
                         </div>
@@ -127,7 +127,8 @@ $('#modal').on('show.bs.modal', function (event) {
         modal.find('#id').val(cokData[0].id);
         id_user.setValue(cokData[0].id_user);
         id_shift.setValue(cokData[0].id_shift);
-        modal.find('#tanggal').val(cokData[0].tanggal);
+        modal.find('#tanggal_dari').val(cokData[0].tanggal);
+        modal.find('#tanggal_ke').val(cokData[0].tanggal);
     }
 });
 

@@ -1,5 +1,27 @@
 <nav class="sidebar sidebar-offcanvas" id="sidebar">
     <ul class="nav">
+
+        <li class="nav-item mb-2">
+            <div style="
+                border-radius: 8px; 
+                height: fit-content; 
+                width: 100%;
+                background-image: url('https://cdn.pixabay.com/photo/2022/10/03/23/41/house-7497002_640.png');
+                background-position: center;
+                "
+                class="text-white py-1 px-3">
+                @php
+                    $user = DB::table('users')
+                        ->where('users.id', Auth::id())
+                        ->first();
+                @endphp
+
+                <b>Name:</b><br>
+                {{ $user->email }}
+
+            </div>
+        </li>
+
         <li class="nav-item">
             <a class="nav-link" href="{{ url('dashboard') }}">
                 <i class="icon-grid menu-icon"></i>

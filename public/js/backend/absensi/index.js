@@ -72,7 +72,7 @@ function getData() {
                             <i class="bi bi-three-dots" style="font-size:1.5rem"></i>
                         </a>
                         <div class="dropdown-menu">
-                            <a class="dropdown-item text-danger" onclick="hapusData(${row.id})">
+                            <a href="#" class="dropdown-item text-danger" onclick="hapusData(${row.id})">
                                 <i class="bi bi-trash"></i> Hapus
                             </a>
                         </div>
@@ -119,35 +119,56 @@ $('#modalAbsensi').on('show.bs.modal', function (event) {
 let form = document.getElementById('formAbsensi');
 
 form.onsubmit = function (e) {
-    e.preventDefault();
-
     let formData = new FormData(form);
 
-    $("#tombol_kirim").prop("disabled", true);
+    document.getElementById('respon_error').innerHTML = ``
 
-    axios.post(
-        formData.get('id') == "" ? "/store-absensi" : "/update-absensi",
-        formData
-    )
-        .then(res => {
-            $("#tombol_kirim").prop("disabled", false);
+    e.preventDefault();
 
-            Swal.fire({
-                icon: "success",
-                title: "Sukses",
-                text: "Absensi berhasil disimpan",
-                showConfirmButton: false,
-                timer: 2000
-            });
+    document.getElementById("tombol_kirim").disabled = true;
 
-            $("#modalAbsensi").modal("hide");
-            table.destroy();
-            getData();
+    axios({
+        method: 'post',
+        url: 'store-absensi',
+        data: formData,
+    })
+        .then(function (res) {
+
+            console.log(res.data.responCode);
+
+            if (res.data.responCode == 1) {
+
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Sukses',
+                    text: res.data.respon,
+                    timer: 3000,
+                    showConfirmButton: false
+                })
+
+                location.reload();
+
+            } else {
+
+                //respon 
+                let respon_error = ``
+                Object.entries(res.data.respon).forEach(([field, messages]) => {
+                    messages.forEach(message => {
+                        respon_error += `<li>${message}</li>`;
+                    });
+                });
+
+                document.getElementById('respon_error').innerHTML = respon_error
+
+            }
+
+            document.getElementById("tombol_kirim").disabled = false;
 
         })
-        .catch(err => {
-            $("#tombol_kirim").prop("disabled", false);
-            console.error(err);
+        .catch(function (res) {
+            document.getElementById("tombol_kirim").disabled = false;
+            //handle error
+            console.log(res);
         });
 }
 
@@ -210,7 +231,10 @@ $("#btnCapture").click(function () {
     let image = canvas.toDataURL("image/png");
 
     $("#foto").val(image);
-    $("#previewFoto").attr("src", image);
+    // tampilkan preview hanya jika ada gambar
+    if (image) {
+        $("#previewFoto").attr("src", image).show();
+    }
 });
 
 

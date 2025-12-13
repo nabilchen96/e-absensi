@@ -51,8 +51,8 @@
 
                     <div class="modal-body">
 
+                        <div id="respon_error" class="text-danger mb-4"></div>
                         <input type="hidden" name="id" id="id">
-
                         <div class="text-center">
                             <video style="border: 1px solid grey; border-radius: 8px;" id="camera" width="100%"
                                 height="260" autoplay></video>
@@ -60,11 +60,16 @@
                             <canvas id="canvas" width="350" height="260" class="d-none"></canvas>
 
                             <br>
-                            <button type="button" class="btn btn-warning mt-2" id="btnCapture">
+                            <button style="border-radius: 8px !important;" type="button"
+                                class="btn-sm btn-block btn btn-warning mt-2" id="btnCapture">
                                 Ambil Foto
                             </button>
 
                             <input type="hidden" id="foto" name="foto">
+
+                            <img id="previewFoto" src="" alt="Preview Foto"
+                                style="border:1px solid grey; border-radius:8px; margin-top:10px; width:100%; height:auto; display:none;">
+
                         </div>
 
                         <hr>
@@ -83,7 +88,7 @@
 
                     <div class="modal-footer">
                         <button type="button" class="btn btn-danger" data-dismiss="modal">Tutup</button>
-                        <button class="btn btn-primary" id="btnSubmit">Simpan</button>
+                        <button class="btn btn-primary" id="tombol_kirim">Simpan</button>
                     </div>
                 </form>
             </div>

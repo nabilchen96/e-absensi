@@ -38,8 +38,7 @@ function getData() {
             },
             {
                 render: function (data, type, row, meta) {
-                    let jenisLabel = row.jenis.toUpperCase().replace('_', ' ');
-                    return `<b class="d-md-none">Jenis: </b><br class="d-md-none">${jenisLabel}`;
+                    return `<b class="d-md-none">Jenis: </b><br class="d-md-none">${row.jenis}`;
                 }
             },
             {

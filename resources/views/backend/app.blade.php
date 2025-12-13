@@ -6,7 +6,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>PANDU Pengelolaan Kepegawaian Terpadu</title>
+    <title>E-Absensi Bengkulu Utara</title>
     <link rel="stylesheet" href="{{ asset('skydash/vendors/feather/feather.css') }}">
     <link rel="stylesheet" href="{{ asset('skydash/vendors/ti-icons/css/themify-icons.css') }}">
     <link rel="stylesheet" href="{{ asset('skydash/vendors/css/vendor.bundle.base.css') }}">
@@ -77,11 +77,10 @@
                 style="box-shadow: 0px 5px 21px -5px #CDD1E1;">
                 <a class="navbar-brand brand-logo mr-5" style="font-size: 16px; margin-left: 20px;"
                     href="{{ url('/') }}">
-                    <h3><b> <img style="height: 65px;" src="" alt=""> </b></h3>
+                    <h3><b> 🚀 E-ABSENSI </b></h3>
                 </a>
                 <a class="navbar-brand brand-logo-mini" href="{{ url('/') }}">
-                    <!-- <h4><b>🚀</b></h4> -->
-                    <img src="" alt="">
+                    <h4><b>🚀</b></h4>
                 </a>
             </div>
             <div class="navbar-menu-wrapper d-flex align-items-center justify-content-end">
@@ -100,11 +99,11 @@
                             aria-labelledby="profileDropdown">
                             <a class="dropdown-item" style="padding-top: 0; padding-bottom: 0;">
                                 <i class="bi bi-envelope"></i>
-
+                                {{ Auth::user()->email }}
                             </a>
                             <a class="dropdown-item" style="padding-top: 0; padding-bottom: 0;">
                                 <i class="bi bi-person-circle"></i>
-
+                                {{ Auth::user()->name }}
                             </a>
                             <a class="dropdown-item" href="{{ url('logout') }}">
                                 <i class="ti-power-off text-primary"></i>
@@ -138,7 +137,7 @@
                     style="
                     background: #4b49ac;
                     background-image:  
-                    url('https://cdn.pixabay.com/photo/2024/12/31/14/11/cybersecurity-9302462_1280.png'); 
+                    url('https://cdn.pixabay.com/photo/2022/10/03/23/41/house-7497002_640.png'); 
                     height: 200px; 
                     background-position: center 40%;
                     background-size: cover;
@@ -172,6 +171,7 @@
     <script src="{{ asset('skydash/js/axios/dist/axios.min.js') }}"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10.15.7/dist/sweetalert2.all.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/tom-select/dist/js/tom-select.complete.min.js"></script>
+
     @stack('script')
     <script>
         $('#btnSync').click(function() {

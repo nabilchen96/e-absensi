@@ -38,13 +38,6 @@ function getData() {
                             <i class="bi bi-three-dots" style="font-size:1.5rem"></i>
                         </a>
                         <div class="dropdown-menu">
-                            <a class="dropdown-item text-success" data-toggle="modal" data-target="#modal" 
-                                href="javascript:void(0)" data-bs-id="${row.id}">
-                                <i class="bi bi-grid"></i> &nbsp; Edit
-                            </a>
-                            <a class="dropdown-item text-danger" onclick="hapusData(${row.id})">
-                                <i class="bi bi-trash"></i> &nbsp; Hapus
-                            </a>
                             <a href="/detail-user?id=${row.id} " class="dropdown-item text-info">
                                 <i class="bi bi-eye-fill"></i> &nbsp; Detail
                             </a>

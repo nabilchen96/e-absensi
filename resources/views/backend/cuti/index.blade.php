@@ -148,7 +148,7 @@
 
                 <form id="form" enctype="multipart/form-data">
                     @csrf
-
+                    <ul id="respon_error" class="text-danger mb-4"></ul>
                     <input type="hidden" id="id" name="id">
 
                     <div class="modal-header">
@@ -161,8 +161,8 @@
                     <div class="modal-body">
 
                         <div class="form-group">
-                            <label>User</label>
-                            <select class="form-control" name="user_id" id="user_id">
+                            <label>User <sup class="text-danger">*</sup></label>
+                            <select class="form-control" name="user_id" id="user_id" required>
                                 <option value="">-- Pilih User --</option>
                                 @php
                                     $user = DB::table('users')->get();
@@ -174,18 +174,18 @@
                         </div>
 
                         <div class="form-group">
-                            <label>Tanggal Awal</label>
-                            <input type="date" class="form-control" name="tanggal_awal" id="tanggal_awal" max="{{ date('Y') }}-12-31">
+                            <label>Tanggal Awal <sup class="text-danger">*</sup></label>
+                            <input type="date" class="form-control" name="tanggal_awal" id="tanggal_awal" max="{{ date('Y') }}-12-31" required>
                         </div>
 
                         <div class="form-group">
-                            <label>Tanggal Akhir</label>
-                            <input type="date" class="form-control" name="tanggal_akhir" id="tanggal_akhir" max="{{ date('Y') }}-12-31">
+                            <label>Tanggal Akhir <sup class="text-danger">*</sup></label>
+                            <input type="date" class="form-control" name="tanggal_akhir" id="tanggal_akhir" max="{{ date('Y') }}-12-31" required>
                         </div>
 
                         <div class="form-group">
-                            <label>Jenis</label>
-                            <select class="form-control" name="jenis" id="jenis">
+                            <label>Jenis <sup class="text-danger">*</sup></label>
+                            <select class="form-control" name="jenis" id="jenis" required>
                                 <option>Cuti Tahunan</option>
                                 <option>Cuti Bersalin</option>
                                 <option>Cuti Alasan Penting</option>
@@ -197,12 +197,12 @@
                         </div>
 
                         <div class="form-group">
-                            <label>Keterangan</label>
-                            <textarea class="form-control" name="keterangan" id="keterangan"></textarea>
+                            <label>Keterangan <sup class="text-danger">*</sup></label>
+                            <textarea class="form-control" name="keterangan" id="keterangan" required placeholder="Keterangan Cuti"></textarea>
                         </div>
 
                         <div class="form-group">
-                            <label>File (Opsional)</label>
+                            <label>File</label>
                             <input type="file" class="form-control" name="file">
                             <div id="previewFile" class="mt-2"></div>
                         </div>

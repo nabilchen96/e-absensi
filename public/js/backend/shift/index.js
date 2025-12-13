@@ -79,7 +79,7 @@ function getData() {
                                 href="javascript:void(0)" data-bs-id="${row.id}">
                                 <i class="bi bi-grid"></i> Edit
                             </a>
-                            <a class="dropdown-item text-danger" onclick="hapusData(${row.id})">
+                            <a href="#" class="dropdown-item text-danger" onclick="hapusData(${row.id})">
                                 <i class="bi bi-trash"></i> Hapus
                             </a>
                         </div>
@@ -156,6 +156,7 @@ form.onsubmit = function (e) {
                 $("#modal").modal("hide");
                 table.destroy();
                 getData();
+                
             } else {
                 let err = "";
                 Object.entries(res.data.respon).forEach(([field, msg]) => {

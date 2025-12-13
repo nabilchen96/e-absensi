@@ -20,12 +20,12 @@ class PerizinanController extends Controller
         $keyword = $request->keyword;
 
         $query = DB::table('perizinans')
-            ->join('users', 'users.id', '=', 'perizinans.user_id')
+            ->leftjoin('users', 'users.id', '=', 'perizinans.user_id')
             ->select(
                 'perizinans.*',
                 'users.name as user_name'
             )
-            ->where('jenis', [
+            ->whereIn('jenis', [
                 'Perjalanan Dinas', 'Pekerjaan Diluar Kantor'
             ])
             ->orderBy('tanggal', 'DESC');

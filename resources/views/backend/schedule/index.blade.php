@@ -71,10 +71,10 @@
 
                         <input type="hidden" name="id" id="id">
 
-                        <ul id="respon_error" class="text-danger pl-3"></ul>
+                        <ul id="respon_error" class="text-danger mb-4"></ul>
 
                         <div class="form-group">
-                            <label>User</label>
+                            <label>User <sup class="text-danger">*</sup></label>
                             <select name="id_user" id="id_user" class="" required>
                                 <option value="">-- Pilih User --</option>
                                 @php
@@ -87,7 +87,7 @@
                         </div>
 
                         <div class="form-group">
-                            <label>Shift</label>
+                            <label>Shift <sup class="text-danger">*</sup></label>
                             <select name="id_shift" id="id_shift" class="" required>
                                 <option value="">-- Pilih Shift --</option>
                                 @php
@@ -100,11 +100,16 @@
                         </div>
 
                         <div class="form-group">
-                            <label>Tanggal</label>
-                            <input type="date" name="tanggal" id="tanggal" class="form-control form-control-sm"
+                            <label>Tanggal Dari<sup class="text-danger">*</sup></label>
+                            <input type="date" name="tanggal_dari" id="tanggal_dari" class="form-control form-control-sm"
                                 required>
                         </div>
 
+                        <div class="form-group">
+                            <label>Tanggal Ke<sup class="text-danger">*</sup></label>
+                            <input type="date" name="tanggal_ke" id="tanggal_ke" class="form-control form-control-sm"
+                                required>
+                        </div>
                     </div>
 
                     <div class="modal-footer p-3">
@@ -125,7 +130,7 @@
                 </div>
                 <div class="modal-body">
                     <div class="form-group">
-                        <label>User</label>
+                        <label>User <sup class="text-danger">*</sup></label>
                         <select id="idUserSearch" class="">
                             <option value="">-- Semua User --</option>
                             @foreach ($users as $user)
@@ -135,12 +140,12 @@
                     </div>
 
                     <div class="form-group">
-                        <label>Tanggal Dari</label>
+                        <label>Tanggal Dari <sup class="text-danger">*</sup></label>
                         <input type="date" id="tanggalDari" class="form-control">
                     </div>
 
                     <div class="form-group">
-                        <label>Tanggal Ke</label>
+                        <label>Tanggal Ke <sup class="text-danger">*</sup></label>
                         <input type="date" id="tanggalSampai" class="form-control">
                     </div>
                 </div>

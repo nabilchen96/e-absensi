@@ -19,6 +19,11 @@ Route::get('/', 'App\Http\Controllers\AuthController@login')->name('login');
 Route::get('/login', 'App\Http\Controllers\AuthController@login')->name('login');
 Route::post('/loginProses', 'App\Http\Controllers\AuthController@loginProses');
 
+Route::get('/absen-tanpa-login', function(){
+    return view('frontend.absensi');
+});
+
+Route::post('/store-absen-tanpa-login', 'App\Http\Controllers\AbsensiController@storeAbsenTanpaLogin');
 
 //BACKEND
 Route::group(['middleware' => 'auth'], function () {
@@ -26,6 +31,8 @@ Route::group(['middleware' => 'auth'], function () {
 
     //DASHBOARD
     Route::get('/dashboard', 'App\Http\Controllers\DashboardController@index');
+    Route::get('/grafik-absensi', 'App\Http\Controllers\DashboardController@grafikAbsensi');
+    Route::get('/grafik-izin-cuti', 'App\Http\Controllers\DashboardController@grafikIzinCuti');
 
     //USER
     Route::get('/user', 'App\Http\Controllers\UserController@index');
@@ -87,6 +94,14 @@ Route::group(['middleware' => 'auth'], function () {
         return response()->json(['message' => 'Sinkronisasi sedang berjalan di background.']);
     });
 });
+
+//LOGOUT
+Route::get('/logout', function () {
+    Auth::logout();
+    return redirect('login');
+})->name('logout');
+
+
 
 
 

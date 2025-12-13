@@ -61,27 +61,26 @@
                         <h5 class="modal-title m-2" id="exampleModalLabel">User Form</h5>
                     </div>
                     <div class="modal-body">
-                        <div id="respon_error" class="text-danger mb-4"></div>
+                        <ul id="respon_error" class="text-danger mb-4"></ul>
                         <input type="hidden" name="id" id="id">
                         <div class="form-group">
-                            <label for="exampleInputEmail1">Email address</label>
+                            <label for="exampleInputEmail1">Email address <sup class="text-danger">*</sup></label>
                             <input name="email" id="email" type="email" placeholder="email"
                                 class="form-control form-control-sm" aria-describedby="emailHelp" required>
-                            <span class="text-danger error" style="font-size: 12px;" id="email_alert"></span>
                         </div>
                         <div class="form-group">
-                            <label>Nama Lengkap</label>
+                            <label>Nama Lengkap <sup class="text-danger">*</sup></label>
                             <input name="name" id="name" type="text" placeholder="Nama Lengkap"
                                 class="form-control form-control-sm" aria-describedby="emailHelp" required>
                         </div>
                         <div class="form-group">
-                            <label>Password</label>
+                            <label>Password <sup class="text-danger">*</sup></label>
                             <input name="password" id="password" type="password" placeholder="Password"
                                 class="form-control form-control-sm">
                             <span class="text-danger error" style="font-size: 12px;" id="password_alert"></span>
                         </div>
                         <div class="form-group">
-                            <label>Role</label>
+                            <label>Role <sup class="text-danger">*</sup></label>
                             <select name="role" class="form-control" id="role" required>
                                 <option value="">PILIH ROLE</option>
                                 <option>Admin</option>

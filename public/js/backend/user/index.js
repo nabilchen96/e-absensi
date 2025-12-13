@@ -42,7 +42,7 @@ function getData() {
                                 href="javascript:void(0)" data-bs-id="${row.id}">
                                 <i class="bi bi-grid"></i> &nbsp; Edit
                             </a>
-                            <a class="dropdown-item text-danger" onclick="hapusData(${row.id})">
+                            <a href="#" class="dropdown-item text-danger" onclick="hapusData(${row.id})">
                                 <i class="bi bi-trash"></i> &nbsp; Hapus
                             </a>
                         </div>

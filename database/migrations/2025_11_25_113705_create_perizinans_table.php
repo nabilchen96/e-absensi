@@ -18,6 +18,7 @@ return new class extends Migration
             $table->enum('jenis', [
                 'Perjalanan Dinas', 
                 'Pekerjaan Diluar Kantor', 
+                
                 'Cuti Tahunan', 
                 'Cuti Bersalin',
                 'Cuti Alasan Penting', 

@@ -25,7 +25,7 @@ class CutiController extends Controller
                 'perizinans.*',
                 'users.name as user_name'
             )
-            ->where('jenis', [
+            ->whereIn('jenis', [
                 'Cuti Tahunan',
                 'Cuti Bersalin',
                 'Cuti Alasan Penting',

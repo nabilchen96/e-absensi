@@ -154,47 +154,47 @@
                     </div>
 
                     <div class="modal-body">
-
+                        <ul id="respon_error" class="text-danger mb-4"></ul>
                         <input type="hidden" name="id" id="id">
 
                         <div class="form-group">
-                            <label>Nama Shift</label>
+                            <label>Nama Shift <sup class="text-danger">*</sup></label>
                             <input type="text" name="nama_shift" id="nama_shift" class="form-control form-control-sm"
-                                required>
+                            required >
                         </div>
 
                         <div class="form-group">
-                            <label>Jam Masuk</label>
+                            <label>Jam Masuk <sup class="text-danger">*</sup></label>
                             <input type="time" name="jam_masuk" id="jam_masuk" class="form-control form-control-sm"
                                 required>
                         </div>
 
                         <div class="form-group">
-                            <label>Jam Pulang</label>
+                            <label>Jam Pulang <sup class="text-danger">*</sup></label>
                             <input type="time" name="jam_pulang" id="jam_pulang" class="form-control form-control-sm"
                                 required>
                         </div>
 
                         <div class="form-group">
-                            <label>Mulai Scan Masuk</label>
+                            <label>Mulai Scan Masuk <sup class="text-danger">*</sup></label>
                             <input type="time" name="mulai_scan_masuk" id="mulai_scan_masuk"
                                 class="form-control form-control-sm" required>
                         </div>
 
                         <div class="form-group">
-                            <label>Akhir Scan Masuk</label>
+                            <label>Akhir Scan Masuk <sup class="text-danger">*</sup></label>
                             <input type="time" name="akhir_scan_masuk" id="akhir_scan_masuk"
                                 class="form-control form-control-sm" required>
                         </div>
 
                         <div class="form-group">
-                            <label>Mulai Scan Pulang</label>
+                            <label>Mulai Scan Pulang <sup class="text-danger">*</sup></label>
                             <input type="time" name="mulai_scan_pulang" id="mulai_scan_pulang"
                                 class="form-control form-control-sm" required>
                         </div>
 
                         <div class="form-group">
-                            <label>Akhir Scan Pulang</label>
+                            <label>Akhir Scan Pulang <sup class="text-danger">*</sup></label>
                             <input type="time" name="akhir_scan_pulang" id="akhir_scan_pulang"
                                 class="form-control form-control-sm" required>
                         </div>
