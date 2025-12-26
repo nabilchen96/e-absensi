@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use DB;
+use Carbon\Carbon;
+
 
 class DashboardController extends Controller
 {
@@ -17,6 +19,7 @@ class DashboardController extends Controller
                     'Perjalanan Dinas',
                     'Pekerjaan Diluar Kantor'
                 ])
+                ->whereDate('perizinans.created_at', Carbon::today())
                 ->get();
 
         $cuti = DB::table('perizinans')
@@ -31,6 +34,7 @@ class DashboardController extends Controller
                     'Cuti Diluar Tanggungan Negara',
                     'Cuti Besar'
                 ])
+                ->whereDate('perizinans.created_at', Carbon::today())
                 ->get();
 
         return view('backend.dashboard.index', [
