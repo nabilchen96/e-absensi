@@ -41,7 +41,7 @@
                         <a class="nav-link" href="{{ url('user') }}">User</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="{{ url('pegawai') }}">Pegawai</a>
+                        <a class="nav-link" href="{{ url('daftar-pegawai') }}">Pegawai</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="{{ url('shift') }}">Shift</a>
@@ -61,7 +61,7 @@
             <div class="collapse" id="aktivitas">
                 <ul class="nav flex-column sub-menu">
                     <li class="nav-item">
-                        <a class="nav-link" href="{{ url('absensi') }}">Absensi</a>
+                        <a class="nav-link" href="{{ url('list-absensi') }}">Absensi</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="{{ url('perizinan') }}">Perizinan</a>

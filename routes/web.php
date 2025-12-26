@@ -42,7 +42,7 @@ Route::group(['middleware' => 'auth'], function () {
     Route::post('/delete-user', 'App\Http\Controllers\UserController@delete');
 
     //PEGAWAI
-    Route::get('/pegawai', 'App\Http\Controllers\PegawaiController@index');
+    Route::get('/daftar-pegawai', 'App\Http\Controllers\PegawaiController@index');
     Route::get('/data-pegawai', 'App\Http\Controllers\PegawaiController@data');
 
     //DETAIL USER
@@ -66,7 +66,7 @@ Route::group(['middleware' => 'auth'], function () {
     Route::get('/list-shift', 'App\Http\Controllers\ScheduleController@listShift');
 
     // ABSENSI
-    Route::get('/absensi', 'App\Http\Controllers\AbsensiController@index');
+    Route::get('/list-absensi', 'App\Http\Controllers\AbsensiController@index');
     Route::get('/data-absensi', 'App\Http\Controllers\AbsensiController@getData');
     Route::post('/store-absensi', 'App\Http\Controllers\AbsensiController@store');
     Route::post('/delete-absensi', 'App\Http\Controllers\AbsensiController@delete');
