@@ -168,7 +168,7 @@
     <script src="{{ asset('skydash/js/todolist.js') }}"></script>
     <script src="{{ asset('skydash/js/dashboard.js') }}"></script>
     <script src="{{ asset('skydash/js/Chart.roundedBarCharts.js') }}"></script>
-    <script src="{{ asset('skydash/js/axios/dist/axios.min.js') }}"></script>
+    <script src="{{ asset('skydash/js/axios/this/axios.min.js') }}"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10.15.7/dist/sweetalert2.all.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/tom-select/dist/js/tom-select.complete.min.js"></script>
 

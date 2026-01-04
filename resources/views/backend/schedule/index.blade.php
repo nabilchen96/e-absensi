@@ -15,10 +15,12 @@
             <div class="card w-100">
                 <div class="card-body">
 
-                    <button type="button" class="btn btn-primary btn-ms mb-4 d-none d-md-inline-block" data-toggle="modal"
-                        data-target="#modal">
-                        Tambah
-                    </button>
+                    @if (Auth::user()->role == 'Admin')
+                        <button type="button" class="btn btn-primary btn-ms mb-4 d-none d-md-inline-block"
+                            data-toggle="modal" data-target="#modal">
+                            Tambah
+                        </button>
+                    @endif
 
                     <button type="button" class="btn btn-info btn-sm mb-4" data-toggle="modal" data-target="#modalCari">
                         <i class="bi bi-search"></i> Cari
@@ -31,11 +33,13 @@
                         <a href="#" id="btnResetFilter"> | <i class="bi bi-arrow-repeat"></i> Reset</a>
                     </div>
 
-                    <button type="button" class="fab-add d-md-none" data-toggle="modal" data-target="#modal">
-                        <i class="bi bi-plus-lg"></i>
-                    </button>
+                    @if(Auth::user()->role == 'Admin')
 
+                        <button type="button" class="fab-add d-md-none" data-toggle="modal" data-target="#modal">
+                            <i class="bi bi-plus-lg"></i>
+                        </button>
 
+                    @endif
                     <div class="table-responsive">
                         <table id="myTable" class="table table-striped" style="width: 100%;">
                             <thead class="bg-info text-white">
@@ -78,7 +82,12 @@
                             <select name="id_user" id="id_user" class="" required>
                                 <option value="">-- Pilih User --</option>
                                 @php
-                                    $users = DB::table('users')->get();
+                                    $users = DB::table('users');
+                                    if(Auth::user()->role == 'Admin'){
+                                        $users = $users->get();
+                                    }else{
+                                        $users = $users->where('id', Auth::id())->get();
+                                    }
                                 @endphp
                                 @foreach ($users as $user)
                                     <option value="{{ $user->id }}">{{ $user->name }}</option>

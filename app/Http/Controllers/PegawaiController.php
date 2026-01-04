@@ -33,7 +33,15 @@ class PegawaiController extends Controller
             });
         }
 
-        $user = $query->get();
+        if(Auth::user()->role == 'Pegawai'){
+
+            $user = $query->where('id', Auth::id())->get();
+
+        }else{
+
+            $user = $query->get();
+        }
+
 
         return response()->json(['data' => $user]);
     }

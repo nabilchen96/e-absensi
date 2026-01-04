@@ -11,9 +11,7 @@
                 "
                 class="text-white py-1 px-3">
                 @php
-                    $user = DB::table('users')
-                        ->where('users.id', Auth::id())
-                        ->first();
+                    $user = DB::table('users')->where('users.id', Auth::id())->first();
                 @endphp
 
                 <b>Name:</b><br>
@@ -29,29 +27,47 @@
             </a>
 
         </li>
-        <li class="nav-item">
-            <a class="nav-link" data-toggle="collapse" href="#ui-basic" aria-expanded="false" aria-controls="ui-basic">
-                <i class="icon-layout menu-icon"></i>
-                <span class="menu-title">Master</span>
-                <i class="menu-arrow"></i>
-            </a>
-            <div class="collapse" id="ui-basic">
-                <ul class="nav flex-column sub-menu">
-                    <li class="nav-item">
-                        <a class="nav-link" href="{{ url('user') }}">User</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="{{ url('daftar-pegawai') }}">Pegawai</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="{{ url('shift') }}">Shift</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="{{ url('schedule') }}">Schedule</a>
-                    </li>
-                </ul>
-            </div>
-        </li>
+        @if (Auth::user()->role == 'Admin')
+            <li class="nav-item">
+                <a class="nav-link" data-toggle="collapse" href="#ui-basic" aria-expanded="false"
+                    aria-controls="ui-basic">
+                    <i class="icon-layout menu-icon"></i>
+                    <span class="menu-title">Master</span>
+                    <i class="menu-arrow"></i>
+                </a>
+                <div class="collapse" id="ui-basic">
+                    <ul class="nav flex-column sub-menu">
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ url('user') }}">User</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ url('daftar-pegawai') }}">Pegawai</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ url('shift') }}">Shift</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ url('schedule') }}">Schedule</a>
+                        </li>
+                    </ul>
+                </div>
+            </li>
+        @endif
+        @if (Auth::user()->role != 'Admin')
+            <li class="nav-item">
+                <a class="nav-link" href="{{ url('daftar-pegawai') }}">
+                    <i class="icon-grid bi bi-person-circle menu-icon"></i>
+                    <span class="menu-title">Profil</span>
+                </a>
+
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="{{ url('schedule') }}">
+                    <i class="icon-grid bi bi-calendar-plus menu-icon"></i>
+                    <span class="menu-title">Schedule</span>
+                </a>
+            </li>
+        @endif
         <li class="nav-item">
             <a class="nav-link" data-toggle="collapse" href="#aktivitas" aria-expanded="false" aria-controls="ui-basic">
                 <i class="icon-layout bi bi-person-workspace menu-icon"></i>
