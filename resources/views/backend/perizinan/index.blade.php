@@ -185,7 +185,12 @@
                             <select class="form-control" name="user_id" id="user_id" required>
                                 <option value="">-- Pilih User --</option>
                                 @php
-                                    $user = DB::table('users')->get();
+                                    $user = DB::table('users');
+                                    if(Auth::user()->role == 'Admin'){
+                                        $user = $user->get();
+                                    }else{
+                                        $user = $user->where('id', Auth::id())->get();
+                                    }
                                 @endphp
                                 @foreach ($user as $u)
                                     <option value="{{ $u->id }}">{{ $u->name }}</option>

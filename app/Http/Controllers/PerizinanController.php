@@ -7,6 +7,7 @@ use App\Models\Perizinan;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
+use Auth;
 
 class PerizinanController extends Controller
 {
@@ -37,7 +38,13 @@ class PerizinanController extends Controller
             });
         }
 
-        return response()->json(['data' => $query->get()]);
+        if(Auth::user()->role == 'Admin'){
+            $query = $query->get();
+        }else{
+            $query = $query->where('users.id', Auth::id())->get();
+        }
+
+        return response()->json(['data' => $query]);
     }
 
     public function store(Request $request)

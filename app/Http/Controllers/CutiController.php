@@ -43,7 +43,13 @@ class CutiController extends Controller
             });
         }
 
-        return response()->json(['data' => $query->get()]);
+        if(Auth::user()->role == 'Admin'){
+            $query = $query->get();
+        }else{
+            $query = $query->where('users.id', Auth::id())->get();
+        }
+
+        return response()->json(['data' => $query]);
     }
 
     public function store(Request $request)
