@@ -54,7 +54,7 @@ class CutiController extends Controller
             'tanggal_akhir' => 'required|date|after_or_equal:tanggal_awal',
             'jenis' => 'required',
             'keterangan' => 'nullable',
-            'file' => 'nullable|file|max:2048'
+            'file' => 'nullable|file|mimes:pdf|max:2048'
         ]);
 
         if ($validator->fails()) {
@@ -100,7 +100,7 @@ class CutiController extends Controller
             'user_id' => 'required',
             'tanggal' => 'required|date',
             'jenis' => 'required|in:izin,cuti,dinas_luar',
-            'file' => 'nullable|file|max:2048'
+            'file' => 'nullable|file|mimes:pdf|max:2048'
         ]);
 
         if ($validator->fails()) {

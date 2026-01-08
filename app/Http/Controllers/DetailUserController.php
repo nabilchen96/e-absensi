@@ -14,12 +14,14 @@ class DetailUserController extends Controller
 
         $data = DB::table('users')
                 ->leftjoin('detail_users', 'detail_users.user_id', '=', 'users.id')
+                ->leftjoin('lokasi_kerjas', 'lokasi_kerjas.id', '=', 'detail_users.satuan_kerja')
                 ->where('users.id', Request('id'))
                 ->select(
                     'users.id as id_user',
                     'users.name',
                     'users.email',
-                    'detail_users.*'
+                    'detail_users.*',
+                    'lokasi_kerjas.lokasi_kerja'
                 )
                 ->first();
 

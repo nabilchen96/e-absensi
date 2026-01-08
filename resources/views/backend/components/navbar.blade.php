@@ -19,13 +19,11 @@
 
             </div>
         </li>
-
         <li class="nav-item">
             <a class="nav-link" href="{{ url('dashboard') }}">
                 <i class="icon-grid menu-icon"></i>
                 <span class="menu-title">Dashboard</span>
             </a>
-
         </li>
         @if (Auth::user()->role == 'Admin')
             <li class="nav-item">
@@ -44,10 +42,16 @@
                             <a class="nav-link" href="{{ url('daftar-pegawai') }}">Pegawai</a>
                         </li>
                         <li class="nav-item">
+                            <a class="nav-link" href="{{ url('lokasi-kerja') }}">Lokasi Kerja</a>
+                        </li>
+                        <li class="nav-item">
                             <a class="nav-link" href="{{ url('shift') }}">Shift</a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link" href="{{ url('schedule') }}">Schedule</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ url('pengumuman') }}">Pengumuman</a>
                         </li>
                     </ul>
                 </div>

@@ -85,11 +85,28 @@
         }
     </style>
 
+    {{-- <nav class="navbar navbar-light bg-white navbar-expand d-md-none fixed-bottom p-0">
+        <ul class="navbar-nav nav-justified w-100">
+            <li class="nav-item">
+                <a href="{{ url('dashboard') }}" class="nav-link">
+                    <i class="icon-grid menu-icon"></i><br>
+                    Dashboard
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="#" data-toggle="modal" data-target="#modal" class="nav-link">
+                    <i class="bi bi-file-earmark-text"></i><br>
+                    Form Cuti
+                </a>
+            </li>
+        </ul>
+    </nav> --}}
+
     <div class="row" style="margin-top: -200px;">
         <div class="col-md-12 text-white">
             <div class="row">
                 <div class="col-12 col-xl-8 mb-xl-0">
-                    <h3 class="font-weight-bold">Data Perizinan</h3>
+                    <h3 class="font-weight-bold">Data Cuti</h3>
                 </div>
             </div>
         </div>
@@ -152,7 +169,7 @@
                     <input type="hidden" id="id" name="id">
 
                     <div class="modal-header">
-                        <h5 class="modal-title">Form Perizinan</h5>
+                        <h5 class="modal-title">Form Cuti</h5>
                         <button type="button" class="close" data-dismiss="modal">
                             <span>&times;</span>
                         </button>
@@ -175,12 +192,14 @@
 
                         <div class="form-group">
                             <label>Tanggal Awal <sup class="text-danger">*</sup></label>
-                            <input type="date" class="form-control" name="tanggal_awal" id="tanggal_awal" max="{{ date('Y') }}-12-31" required>
+                            <input type="date" class="form-control" name="tanggal_awal" id="tanggal_awal"
+                                max="{{ date('Y') }}-12-31" required>
                         </div>
 
                         <div class="form-group">
                             <label>Tanggal Akhir <sup class="text-danger">*</sup></label>
-                            <input type="date" class="form-control" name="tanggal_akhir" id="tanggal_akhir" max="{{ date('Y') }}-12-31" required>
+                            <input type="date" class="form-control" name="tanggal_akhir" id="tanggal_akhir"
+                                max="{{ date('Y') }}-12-31" required>
                         </div>
 
                         <div class="form-group">

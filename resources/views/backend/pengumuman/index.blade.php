@@ -3,6 +3,7 @@
     <style>
         @media (max-width: 768px) {
 
+            /* SCOPED — hanya bekerja untuk halaman dengan #absensi-container */
             #absensi-container .card,
             #absensi-container .card-body {
                 background: none !important;
@@ -60,6 +61,10 @@
                 font-weight: bold;
             }
 
+            #absensi-container .aksi-btn i {
+                font-size: 1.1rem !important;
+            }
+
             #absensi-container table tbody td:last-child:before,
             #absensi-container table tbody td:nth-last-child(2):before {
                 content: "" !important;
@@ -84,35 +89,17 @@
             }
         }
     </style>
-
-    {{-- <nav class="navbar navbar-light bg-white navbar-expand d-md-none fixed-bottom p-0">
-        <ul class="navbar-nav nav-justified w-100">
-            <li class="nav-item">
-                <a href="{{ url('dashboard') }}" class="nav-link">
-                    <i class="icon-grid menu-icon"></i><br>
-                    Dashboard
-                </a>
-            </li>
-            <li class="nav-item">
-                <a href="#" data-toggle="modal" data-target="#modal" class="nav-link">
-                    <i class="bi bi-file-earmark-text"></i><br>
-                    Form Izin
-                </a>
-            </li>
-        </ul>
-    </nav> --}}
-
     <div class="row" style="margin-top: -200px;">
         <div class="col-md-12 text-white">
             <div class="row">
                 <div class="col-12 col-xl-8 mb-xl-0">
-                    <h3 class="font-weight-bold">Data Perizinan</h3>
+                    <h3 class="font-weight-bold">Data Shift</h3>
                 </div>
             </div>
         </div>
     </div>
 
-    <div class="row" id="absensi-container">
+    <div class="row">
         <div class="col-12 mt-4">
             <div class="card w-100">
                 <div class="card-body">
@@ -122,12 +109,12 @@
                         Tambah
                     </button>
 
-                    <button type="button" class="fab-add d-md-none"data-toggle="modal" data-target="#modal">
+                    <button type="button" class="fab-add d-md-none" data-toggle="modal" data-target="#modal">
                         <i class="bi bi-plus-lg"></i>
                     </button>
 
                     <div class="input-group mb-3">
-                        <input type="text" class="form-control" id="searchInput" placeholder="Cari Perizinan ...">
+                        <input type="text" class="form-control" id="searchInput" placeholder="Cari Shift ...">
                         <div class="input-group-append">
                             <button style="height: 38px;" class="input-group-text" id="btnCari">
                                 <i class="bi bi-search"></i> &nbsp; Cari
@@ -139,89 +126,42 @@
                         <table id="myTable" class="table table-striped" style="width: 100%;">
                             <thead class="bg-info text-white">
                                 <tr>
-                                    <th>No</th>
-                                    <th>User</th>
-                                    <th>Tanggal</th>
-                                    <th>Jenis</th>
-                                    <th width="25%">Keterangan</th>
-                                    <th>File</th>
+                                    <th width="5%">No</th>
+                                    <th>Pengumuman</th>
+                                    <th width="5%">File</th>
                                     <th width="5%">Aksi</th>
                                 </tr>
                             </thead>
                         </table>
                     </div>
-
                 </div>
             </div>
         </div>
     </div>
-    <div class="d-md-none" style="margin-bottom: 70px;">
 
-    </div>
-
-    <!-- ========================= -->
     <!-- Modal -->
-    <!-- ========================= -->
     <div class="modal fade" id="modal" tabindex="-1">
         <div class="modal-dialog">
             <div class="modal-content">
-
-                <form id="form" enctype="multipart/form-data">
-                    @csrf
-                    <ul id="respon_error" class="text-danger mb-4"></ul>
-                    <input type="hidden" id="id" name="id">
-
-                    <div class="modal-header">
-                        <h5 class="modal-title">Form Perizinan</h5>
-                        <button type="button" class="close" data-dismiss="modal">
-                            <span>&times;</span>
-                        </button>
+                <form id="form">
+                    <div class="modal-header p-3">
+                        <h5 class="modal-title m-2">Form Pengumuman</h5>
                     </div>
 
                     <div class="modal-body">
+                        <ul id="respon_error" class="text-danger mb-4"></ul>
+                        <input type="hidden" name="id" id="id">
 
                         <div class="form-group">
-                            <label>User <sup class="text-danger">*</sup> </label>
-                            <select class="form-control" name="user_id" id="user_id" required>
-                                <option value="">-- Pilih User --</option>
-                                @php
-                                    $user = DB::table('users')->get();
-                                @endphp
-                                @foreach ($user as $u)
-                                    <option value="{{ $u->id }}">{{ $u->name }}</option>
-                                @endforeach
-                            </select>
+                            <label>Pengumuman<sup class="text-danger">*</sup></label>
+                            <textarea name="pengumuman" id="pengumuman" class="form-control" required 
+                            placeholder="Pengumuman" cols="30" rows="10"></textarea>
                         </div>
 
                         <div class="form-group">
-                            <label>Tanggal Awal <sup class="text-danger">*</sup> </label>
-                            <input type="date" class="form-control" name="tanggal_awal" id="tanggal_awal"
-                                max="{{ date('Y') }}-12-31" required>
-                        </div>
-
-                        <div class="form-group">
-                            <label>Tanggal Akhir <sup class="text-danger">*</sup> </label>
-                            <input type="date" class="form-control" name="tanggal_akhir" id="tanggal_akhir"
-                                max="{{ date('Y') }}-12-31" required>
-                        </div>
-
-                        <div class="form-group">
-                            <label>Jenis <sup class="text-danger">*</sup> </label>
-                            <select class="form-control" name="jenis" id="jenis" required>
-                                <option>Perjalanan Dinas</option>
-                                <option>Pekerjaan Diluar Kantor</option>
-                            </select>
-                        </div>
-
-                        <div class="form-group">
-                            <label>Keterangan <sup class="text-danger">*</sup> </label>
-                            <textarea class="form-control" name="keterangan" id="keterangan" placeholder="Keterangan Izin" required></textarea>
-                        </div>
-
-                        <div class="form-group">
-                            <label>File</label>
-                            <input type="file" class="form-control" name="file">
-                            <div id="previewFile" class="mt-2"></div>
+                            <label>File <sup class="text-danger">*</sup></label>
+                            <input type="file" name="file" id="file"
+                                class="form-control form-control-sm" required>
                         </div>
 
                     </div>
@@ -230,13 +170,12 @@
                         <button type="button" class="btn btn-danger btn-sm" data-dismiss="modal">Close</button>
                         <button id="tombol_kirim" class="btn btn-primary btn-sm">Submit</button>
                     </div>
-
                 </form>
-
             </div>
         </div>
     </div>
 @endsection
+
 @push('script')
-    <script src="{{ asset('js/backend/perizinan/index.js') }}"></script>
+    <script src="{{ asset('js/backend/pengumuman/index.js') }}"></script>
 @endpush

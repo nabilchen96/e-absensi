@@ -56,6 +56,13 @@ Route::group(['middleware' => 'auth'], function () {
     Route::post('/update-shift', 'App\Http\Controllers\ShiftController@update');
     Route::post('/delete-shift', 'App\Http\Controllers\ShiftController@delete');
 
+    //LOKASI KERJA
+    Route::get('/lokasi-kerja', 'App\Http\Controllers\LokasiKerjaController@index');
+    Route::get('/data-lokasi-kerja', 'App\Http\Controllers\LokasiKerjaController@data');
+    Route::post('/store-lokasi-kerja', 'App\Http\Controllers\LokasiKerjaController@store');
+    Route::post('/update-lokasi-kerja', 'App\Http\Controllers\LokasiKerjaController@update');
+    Route::post('/delete-lokasi-kerja', 'App\Http\Controllers\LokasiKerjaController@delete');
+
     // SHCEDULE
     Route::get('/schedule', 'App\Http\Controllers\ScheduleController@index');
     Route::get('/data-schedule', 'App\Http\Controllers\ScheduleController@data');
@@ -64,6 +71,13 @@ Route::group(['middleware' => 'auth'], function () {
     Route::post('/delete-schedule', 'App\Http\Controllers\ScheduleController@delete');
     Route::get('/list-user', 'App\Http\Controllers\ScheduleController@listUser');
     Route::get('/list-shift', 'App\Http\Controllers\ScheduleController@listShift');
+
+    // SHIFT CRUD
+    Route::get('/pengumuman', 'App\Http\Controllers\PengumumanController@index');
+    Route::get('/data-pengumuman', 'App\Http\Controllers\PengumumanController@data');
+    Route::post('/store-pengumuman', 'App\Http\Controllers\PengumumanController@store');
+    Route::post('/update-pengumuman', 'App\Http\Controllers\PengumumanController@update');
+    Route::post('/delete-pengumuman', 'App\Http\Controllers\PengumumanController@delete');
 
     // ABSENSI
     Route::get('/list-absensi', 'App\Http\Controllers\AbsensiController@index');

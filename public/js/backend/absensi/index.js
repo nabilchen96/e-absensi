@@ -4,6 +4,29 @@ document.addEventListener('DOMContentLoaded', function () {
     getLocation();
 });
 
+const kantor = window.APP_DATA.lokasiKantor;
+
+const kantorLat = parseFloat(kantor.latitude);
+const kantorLng = parseFloat(kantor.longitude);
+let map;           // global map variable
+let markerUser;
+
+function hitungJarak(lat1, lng1, lat2, lng2) {
+    const R = 6371000; // radius bumi dalam meter
+    const dLat = (lat2 - lat1) * Math.PI / 180;
+    const dLng = (lng2 - lng1) * Math.PI / 180;
+
+    const a =
+        Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+        Math.cos(lat1 * Math.PI / 180) *
+        Math.cos(lat2 * Math.PI / 180) *
+        Math.sin(dLng / 2) * Math.sin(dLng / 2);
+
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+    return R * c; // hasil meter
+}
+
+
 // tombol cari (jika nanti ditambahkan input search)
 $("#btnCari").click(function () {
     table.ajax.reload();
@@ -62,6 +85,20 @@ function getData() {
                         <b class="d-md-none">Waktu Absen: </b><br class="d-md-none"> 
                         ${row.datetime}
                     `;
+                }
+            },
+            {
+                render: function (data, type, row, meta) {
+
+                    const jarakString = row.jarak;
+
+                    const jarakAngka = parseFloat(
+                        jarakString.replace(/\./g, '').replace(',', '.')
+                    );
+
+                    const hasil = Math.floor(jarakAngka).toLocaleString('id-ID');
+
+                    return `${hasil} Meter`
                 }
             },
             {
@@ -158,7 +195,7 @@ form.onsubmit = function (e) {
                     });
                 });
 
-                document.getElementById('respon_error').innerHTML = respon_error
+                document.getElementById('respon_error').innerHTML = `<ul>` + respon_error + `</ul>`
 
             }
 
@@ -246,10 +283,49 @@ function getLocation() {
     if (navigator.geolocation) {
         navigator.geolocation.getCurrentPosition(function (pos) {
 
-            console.log(pos.coords.latitude);
+            const userLat = pos.coords.latitude;
+            const userLng = pos.coords.longitude;
 
-            $("#latitude").val(pos.coords.latitude);
-            $("#longitude").val(pos.coords.longitude);
+            $("#latitude").val(userLat);
+            $("#longitude").val(userLng);
+
+            console.log(kantorLat, kantorLng);
+
+
+            // hitung jarak ke kantor
+            const jarak = hitungJarak(
+                userLat,
+                userLng,
+                kantorLat,
+                kantorLng
+            );
+
+            // console.log("Jarak ke kantor:", jarak.toFixed(2), "meter");
+
+            // validasi perimeter
+            // if (jarak <= radiusKantor) {
+            //     console.log("✅ DALAM PERIMETER KANTOR");
+            //     $("#statusLokasi").val("DALAM");
+            // } else {
+            //     console.log("❌ DI LUAR PERIMETER KANTOR");
+            //     $("#statusLokasi").val("LUAR");
+            // }
+
+            // kalau mau ditampilkan ke UI
+            $("#jarak").val(
+                jarak.toLocaleString('id-ID', {
+                    minimumFractionDigits: 3,
+                    maximumFractionDigits: 3
+                })
+            );
+
+        }, function (error) {
+            alert("Gagal mengambil lokasi");
         });
     }
 }
+
+
+
+
+

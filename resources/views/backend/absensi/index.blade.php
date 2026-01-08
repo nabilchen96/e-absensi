@@ -20,6 +20,12 @@
                         <i class="bi bi-plus-lg"></i>
                     </button>
 
+                    <div class="alert alert-primary" style="border-color: #b8daff; background-color: #cce5ff !important;">
+                        Update lokasi kerja anda agar sesuai dengan jarak lokasi kerja saat ini. Update lokasi kerja di
+                        halaman
+                        <a href="{{ url('/detail-user') }}?id={{ Auth::id() }}">Profil</a>
+                    </div>
+
                     <div class="table-responsive">
                         <table id="myTable" class="table table-striped" style="width: 100%;">
                             <thead class="bg-info text-white">
@@ -30,6 +36,7 @@
                                     <th>Latitude</th>
                                     <th>Longitude</th>
                                     <th>Datetime</th>
+                                    <th>Jarak Kantor</th>
                                     <th>Aksi</th>
                                 </tr>
                             </thead>
@@ -51,9 +58,11 @@
 
                     <div class="modal-body">
 
-                        <div id="respon_error" class="text-danger mb-4"></div>
+                        <div id="respon_error" class="text-danger"></div>
                         <input type="hidden" name="id" id="id">
                         <div class="text-center">
+
+
                             <video style="border: 1px solid grey; border-radius: 8px;" id="camera" width="100%"
                                 height="260" autoplay></video>
                             {{-- <canvas style="border: 1px solid grey; border-radius: 8px;" id="canvas" width="100%" height="260" class="d-none"></canvas> --}}
@@ -74,21 +83,37 @@
 
                         <hr>
 
-                        <div class="form-group">
-                            <label>Latitude</label>
-                            <input type="text" id="latitude" name="latitude" class="form-control" readonly>
+                        <div class="row">
+                            <div class="col-lg-6">
+                                <div class="form-group">
+                                    <label>Latitude</label>
+                                    <input type="text" id="latitude" name="latitude" class="form-control" readonly>
+                                </div>
+                            </div>
+                            <div class="col-lg-6">
+                                <div class="form-group">
+                                    <label>Longitude</label>
+                                    <input type="text" id="longitude" name="longitude" class="form-control" readonly>
+                                </div>
+                            </div>
                         </div>
 
-                        <div class="form-group">
-                            <label>Longitude</label>
-                            <input type="text" id="longitude" name="longitude" class="form-control" readonly>
+                        <div class="form-group mt-2">
+                            <label>Jarak Dari Kantor (Meter)</label>
+                            <input type="text" id="jarak" name="jarak" readonly class="form-control"
+                                placeholder="Jarak (meter)">
                         </div>
 
+                        <iframe
+                            style="margin-bottom: 10px; border: 1px solid grey; border-radius: 8px; height: 250px; width: 100%;"
+                            src="https://www.google.com/maps?q=-3.4391476682335727,102.19011149551001&hl=id&z=13&output=embed"
+                            allowfullscreen="" loading="lazy">
+                        </iframe>
                     </div>
 
                     <div class="modal-footer">
                         <button type="button" class="btn btn-danger" data-dismiss="modal">Tutup</button>
-                        <button class="btn btn-primary" id="tombol_kirim">Simpan</button>
+                        <button class="btn btn-primary" id="tombol_kirim">Absen</button>
                     </div>
                 </form>
             </div>
@@ -97,5 +122,12 @@
 @endsection
 
 @push('script')
+    <script>
+        window.APP_DATA = {
+            lokasiKantor: @json($data)
+        };
+    </script>
     <script src="{{ asset('js/backend/absensi/index.js') }}"></script>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
 @endpush

@@ -8,12 +8,26 @@ use App\Models\User;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Hash;
+use Auth;
+use DB;
 
 class AbsensiController extends Controller
 {
     public function index()
     {
-        return view('backend.absensi.index');
+        $data = DB::table('users')
+                ->leftjoin('detail_users', 'detail_users.user_id', '=', 'users.id')
+                ->leftjoin('lokasi_kerjas', 'lokasi_kerjas.id', '=', 'detail_users.satuan_kerja')
+                ->where('users.id', Auth::id())
+                ->select(
+                    'lokasi_kerjas.latitude',
+                    'lokasi_kerjas.longitude'
+                )
+                ->first();
+
+        return view('backend.absensi.index', [
+            'data' => $data
+        ]);
     }
 
     public function getData(Request $request)
@@ -26,8 +40,13 @@ class AbsensiController extends Controller
                     $q->where('name', 'like', "%$keyword%");
                 }
             })
-            ->orderBy('id', 'DESC')
-            ->get();
+            ->orderBy('id', 'DESC');
+
+        if(Auth::user()->role == 'Admin'){
+            $data = $data->get();
+        }else{
+            $data = $data->where('user_id', Auth::id())->get();
+        }
 
         return response()->json(['data' => $data]);
     }
@@ -63,6 +82,7 @@ class AbsensiController extends Controller
                     'longitude' => $request->longitude,
                     'user_id'   => auth()->user()->id ?? 1,
                     'datetime'  => now(),
+                    'jarak'     => $request->jarak
                 ]
             );
 
@@ -84,6 +104,21 @@ class AbsensiController extends Controller
             'responCode' => 1,
             'respon' => 'Absensi berhasil dihapus'
         ]);
+    }
+
+    public function hitungJarak($lat1, $lon1, $lat2, $lon2) {
+        $earthRadius = 6371; // Radius bumi dalam KM
+
+        $dLat = deg2rad($lat2 - $lat1);
+        $dLon = deg2rad($lon2 - $lon1);
+
+        $a = sin($dLat / 2) * sin($dLat / 2) +
+            cos(deg2rad($lat1)) * cos(deg2rad($lat2)) *
+            sin($dLon / 2) * sin($dLon / 2);
+
+        $c = 2 * asin(sqrt($a));
+
+        return $earthRadius * $c; // hasil dalam KM
     }
 
     public function storeAbsenTanpaLogin(Request $request)
@@ -143,6 +178,18 @@ class AbsensiController extends Controller
             $image = $request->foto;
             $imageName = time().".png";
             Storage::put("public/absensi/".$imageName, base64_decode(explode(",", $image)[1]));
+
+            $data = DB::table('users')
+                ->leftjoin('detail_users', 'detail_users.user_id', '=', 'users.id')
+                ->leftjoin('lokasi_kerjas', 'lokasi_kerjas.id', '=', 'detail_users.satuan_kerja')
+                ->where('users.id', $user->id)
+                ->select(
+                    'lokasi_kerjas.latitude',
+                    'lokasi_kerjas.longitude'
+                )
+                ->first();
+
+            $jarakKm = $this->hitungJarak($data->latitude, $data->longitude, $request->latitude, $request->longitude);
     
             Absensi::Create(
                 [
@@ -151,6 +198,7 @@ class AbsensiController extends Controller
                     'longitude' => $request->longitude,
                     'user_id'   => $user->id,
                     'datetime'  => now(),
+                    'jarak'     => number_format($jarakKm, 3)
                 ]
             );
 
