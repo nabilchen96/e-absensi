@@ -235,7 +235,7 @@
                                 <b>NIP.</b> {{ $profil->nip }}<br>
                                 <b>Jabatan.</b> {{ $profil->jabatan }}<br>
                                 <b>Status.</b> {{ $profil->jenis_asn }}<br>
-                                <b>Satuan Kerja.</b> {{ $lokasi->lokasi_kerja }}
+                                <b>Satuan Kerja.</b> {{ @$lokasi->lokasi_kerja }}
                             </div>
                         </div>
 
