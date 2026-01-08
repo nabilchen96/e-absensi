@@ -338,7 +338,7 @@
                                 <i class="bi bi-file-earmark-text"></i>
                             @endif
                         </li>
-                    @else 
+                    @empty
                         <li class="list-group-item">
                             Belum ada pengumuman di tampilkan
                         </li>
