@@ -327,7 +327,7 @@
                     @php
                         $pengumuman = DB::table('pengumumen')->limit(10)->get();
                     @endphp
-                    @foreach ($pengumuman as $item)
+                    @forelse ($pengumuman as $item)
                         <li class="list-group-item">
                             {{ $item->pengumuman }}
                             @if ($item->file)
@@ -338,7 +338,11 @@
                                 <i class="bi bi-file-earmark-text"></i>
                             @endif
                         </li>
-                    @endforeach
+                    @else 
+                        <li class="list-group-item">
+                            Belum ada pengumuman di tampilkan
+                        </li>
+                    @endforelse
                 </ul>
             </div>
         </div>
