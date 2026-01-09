@@ -12,19 +12,31 @@ let map;           // global map variable
 let markerUser;
 
 function hitungJarak(lat1, lng1, lat2, lng2) {
-    const R = 6371000; // radius bumi dalam meter
+
+    // validasi data
+    if (
+        lat1 == null || lng1 == null ||
+        lat2 == null || lng2 == null ||
+        isNaN(lat1) || isNaN(lng1) ||
+        isNaN(lat2) || isNaN(lng2)
+    ) {
+        return null; // atau '' jika mau
+    }
+
+    const R = 6371000; // meter
     const dLat = (lat2 - lat1) * Math.PI / 180;
     const dLng = (lng2 - lng1) * Math.PI / 180;
 
     const a =
-        Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+        Math.sin(dLat / 2) ** 2 +
         Math.cos(lat1 * Math.PI / 180) *
         Math.cos(lat2 * Math.PI / 180) *
-        Math.sin(dLng / 2) * Math.sin(dLng / 2);
+        Math.sin(dLng / 2) ** 2;
 
     const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-    return R * c; // hasil meter
+    return R * c;
 }
+
 
 
 // tombol cari (jika nanti ditambahkan input search)
@@ -90,15 +102,20 @@ function getData() {
             {
                 render: function (data, type, row, meta) {
 
-                    const jarakString = row.jarak;
+                    if (!row.jarak) {
+                        return '-';
+                    }
 
                     const jarakAngka = parseFloat(
-                        jarakString.replace(/\./g, '').replace(',', '.')
+                        row.jarak.replace(/\./g, '').replace(',', '.')
                     );
 
-                    const hasil = Math.floor(jarakAngka).toLocaleString('id-ID');
+                    if (isNaN(jarakAngka)) {
+                        return '-';
+                    }
 
-                    return `${hasil} Meter`
+                    const hasil = Math.floor(jarakAngka).toLocaleString('id-ID');
+                    return `${hasil} Meter`;
                 }
             },
             {

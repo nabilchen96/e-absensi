@@ -101,7 +101,13 @@
                         <div class="form-group mt-2">
                             <label>Jarak Dari Kantor (Meter)</label>
                             <input type="text" id="jarak" name="jarak" readonly class="form-control"
-                                placeholder="Jarak (meter)">
+                                placeholder="Jarak (meter)" required>
+                            <span class="text-danger" style="font-size: 12px;">
+                                *Update lokasi kerja anda agar sesuai dengan jarak lokasi kerja saat ini. Update lokasi
+                                kerja di
+                                halaman
+                                <a href="{{ url('/detail-user') }}?id={{ Auth::id() }}">Profil</a>
+                            </span>
                         </div>
 
                         <iframe

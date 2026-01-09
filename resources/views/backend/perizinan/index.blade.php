@@ -216,6 +216,10 @@
                                 <option>Perjalanan Dinas</option>
                                 <option>Pekerjaan Diluar Kantor</option>
                             </select>
+                            <span class="text-danger" style="font-size: 12px;">
+                                *izin ini hanya berlaku 4 jam kerja, diwajibkan absen lagi setelahnya. Ybs harus tetap melakukan absensi
+                                agar tetap berstatus hadir pada hari tersebut
+                            </span>
                         </div>
 
                         <div class="form-group">
