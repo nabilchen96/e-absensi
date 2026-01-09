@@ -186,9 +186,9 @@
                                 <option value="">-- Pilih User --</option>
                                 @php
                                     $user = DB::table('users');
-                                    if(Auth::user()->role == 'Admin'){
+                                    if (Auth::user()->role == 'Admin') {
                                         $user = $user->get();
-                                    }else{
+                                    } else {
                                         $user = $user->where('id', Auth::id())->get();
                                     }
                                 @endphp
@@ -213,11 +213,13 @@
                         <div class="form-group">
                             <label>Jenis <sup class="text-danger">*</sup> </label>
                             <select class="form-control" name="jenis" id="jenis" required>
+                                <option value="">PILIH JENIS IZIN DINAS</option>
                                 <option>Perjalanan Dinas</option>
                                 <option>Pekerjaan Diluar Kantor</option>
                             </select>
-                            <span class="text-danger" style="font-size: 12px;">
-                                *izin ini hanya berlaku 4 jam kerja, diwajibkan absen lagi setelahnya. Ybs harus tetap melakukan absensi
+                            <span class="text-danger d-none" id="jenis_izin" style="font-size: 12px;">
+                                *izin Pekerjaan Diluar Kantor ini hanya berlaku 4 jam kerja, diwajibkan absen lagi
+                                setelahnya. Ybs harus tetap melakukan absensi
                                 agar tetap berstatus hadir pada hari tersebut
                             </span>
                         </div>
@@ -248,4 +250,15 @@
 @endsection
 @push('script')
     <script src="{{ asset('js/backend/perizinan/index.js') }}"></script>
+    <script>
+        document.getElementById('jenis').addEventListener('change', function() {
+            const izin = document.getElementById('jenis_izin');
+
+            if (this.value === 'Pekerjaan Diluar Kantor') {
+                izin.classList.remove('d-none');
+            } else {
+                izin.classList.add('d-none');
+            }
+        });
+    </script>
 @endpush
