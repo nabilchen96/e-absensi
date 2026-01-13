@@ -12,6 +12,7 @@ class LokasiKerja extends Model
     protected $fillable = [
         'lokasi_kerja',
         'latitude',
-        'longitude'
+        'longitude',
+        'id_pandu'
     ];
 }

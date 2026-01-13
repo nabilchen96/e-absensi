@@ -38,18 +38,18 @@ class SyncUnitKerjaJob implements ShouldQueue
             foreach ($data as $row) {
 
                 // sinkron juga ke lokasi_kerjas
-                if (!empty($row['latitude']) && !empty($row['longitude'])) {
-                    LokasiKerja::updateOrCreate(
-                        [
-                            'id_pandu' => $row['id'],
-                        ],
-                        [
-                            'unit_kerja' => $row['unit_kerja'],
-                            'latitude'  => $row['latitude'],
-                            'longitude' => $row['longitude'],
-                        ]
-                    );
-                }
+                LokasiKerja::updateOrCreate(
+                    [
+                        'id_pandu' => $row['id'],
+                    ],
+                    [
+                        'unit_kerja' => $row['unit_kerja'],
+                        'latitude'  => $row['latitude'],
+                        'longitude' => $row['longitude'],
+                    ]
+                );
+                // if (!empty($row['latitude']) && !empty($row['longitude'])) {
+                // }
             }
 
             $page++;
