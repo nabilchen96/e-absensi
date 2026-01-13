@@ -7,6 +7,10 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Support\Facades\Http;
+
+// use App\Models\User;
+use App\Models\LokasiKerja;
 
 class SyncUnitKerjaJob implements ShouldQueue
 {
@@ -43,9 +47,9 @@ class SyncUnitKerjaJob implements ShouldQueue
                         'id_pandu' => $row['id'],
                     ],
                     [
-                        'unit_kerja' => $row['unit_kerja'],
-                        'latitude'  => $row['latitude'],
-                        'longitude' => $row['longitude'],
+                        'lokasi_kerja' => $row['unit_kerja'],
+                        'latitude'  => $row['latitude'] ?? '0',
+                        'longitude' => $row['longitude'] ?? '0',
                     ]
                 );
                 // if (!empty($row['latitude']) && !empty($row['longitude'])) {
