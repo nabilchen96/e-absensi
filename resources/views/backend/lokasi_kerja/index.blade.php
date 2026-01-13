@@ -108,6 +108,7 @@
                         data-target="#modal">
                         Tambah
                     </button>
+                    <button id="btnSync" class="btn btn-primary btn-md mb-4 d-none d-md-inline-block">Sinkron Lokasi</button>
 
                     <button type="button" class="fab-add d-md-none" data-toggle="modal" data-target="#modal">
                         <i class="bi bi-plus-lg"></i>
