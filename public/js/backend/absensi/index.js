@@ -67,7 +67,7 @@ function getData() {
             {
                 render: function (data, type, row, meta) {
                     return `
-                        <img src="/storage/absensi/${row.foto}" style="border-radius: 8px; width: 80px; height: 80px; object-fit: fit;">
+                        <img src="/absensi/${row.foto}" style="border-radius: 8px; width: 80px; height: 80px; object-fit: fit;">
                     `;
                 }
             },

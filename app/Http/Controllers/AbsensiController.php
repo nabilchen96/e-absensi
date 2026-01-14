@@ -70,21 +70,38 @@ class AbsensiController extends Controller
 
         }else{
 
-            // simpan foto (base64)
+            // simpan foto (base64) ke public/absensi
             $image = $request->foto;
-            $imageName = time().".png";
-            Storage::put("public/absensi/".$imageName, base64_decode(explode(",", $image)[1]));
-    
-            Absensi::Create(
-                [
-                    'foto'      => $imageName,
-                    'latitude'  => $request->latitude,
-                    'longitude' => $request->longitude,
-                    'user_id'   => auth()->user()->id ?? 1,
-                    'datetime'  => now(),
-                    'jarak'     => $request->jarak
-                ]
-            );
+
+            // hapus header base64
+            $image = explode(',', $image)[1];
+
+            // decode base64
+            $imageData = base64_decode($image);
+
+            // nama file
+            $imageName = time() . '.png';
+
+            // path ke folder public
+            $path = public_path('absensi');
+
+            // buat folder jika belum ada
+            if (!file_exists($path)) {
+                mkdir($path, 0755, true);
+            }
+
+            // simpan file
+            file_put_contents($path . '/' . $imageName, $imageData);
+
+            Absensi::create([
+                'foto'      => $imageName,
+                'latitude'  => $request->latitude,
+                'longitude' => $request->longitude,
+                'user_id'   => auth()->user()->id ?? 1,
+                'datetime'  => now(),
+                'jarak'     => $request->jarak
+            ]);
+
 
             $data = [
                 'responCode' => 1,
@@ -174,10 +191,29 @@ class AbsensiController extends Controller
                 ]);
             }
 
-            // simpan foto (base64)
+            // simpan foto (base64) ke public/absensi
             $image = $request->foto;
-            $imageName = time().".png";
-            Storage::put("public/absensi/".$imageName, base64_decode(explode(",", $image)[1]));
+
+            // hapus header base64
+            $image = explode(',', $image)[1];
+
+            // decode base64
+            $imageData = base64_decode($image);
+
+            // nama file
+            $imageName = time() . '.png';
+
+            // path ke folder public
+            $path = public_path('absensi');
+
+            // buat folder jika belum ada
+            if (!file_exists($path)) {
+                mkdir($path, 0755, true);
+            }
+
+            // simpan file
+            file_put_contents($path . '/' . $imageName, $imageData);
+
 
             $data = DB::table('users')
                 ->leftjoin('detail_users', 'detail_users.user_id', '=', 'users.id')
