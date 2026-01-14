@@ -6,11 +6,22 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use DB;
 use Carbon\Carbon;
+use Auth;
 
 
 class DashboardController extends Controller
 {
     public function index(){
+
+        $data = DB::table('users')
+                ->leftjoin('detail_users', 'detail_users.user_id', '=', 'users.id')
+                ->leftjoin('lokasi_kerjas', 'lokasi_kerjas.id', '=', 'detail_users.satuan_kerja')
+                ->where('users.id', Auth::id())
+                ->select(
+                    'lokasi_kerjas.latitude',
+                    'lokasi_kerjas.longitude'
+                )
+                ->first();
 
         $izin = DB::table('perizinans')
                 ->leftjoin('users', 'users.id', '=', 'perizinans.user_id')
@@ -40,6 +51,7 @@ class DashboardController extends Controller
         return view('backend.dashboard.index', [
             'cuti' => $cuti, 
             'izin' => $izin,
+            'data' => $data
         ]);
     }
 

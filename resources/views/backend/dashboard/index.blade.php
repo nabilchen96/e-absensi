@@ -60,6 +60,16 @@
             font-size: 10px;
             line-height: 1.5;
         }
+
+        .menu-card {
+            height: 65px;
+        }
+
+        .menu-text {
+            font-size: 12px;
+            line-height: 1;
+            text-align: center;
+        }
     </style>
     <div class="row" style="margin-top: -200px;">
         <div class="col-md-12 text-white">
@@ -243,6 +253,92 @@
                 </div>
             </div>
             <div class="col-12 mt-4">
+                <button type="button" style="border-radius: 8px !important;" class="btn btn-info btn-sm mb-4 btn-block"
+                    data-toggle="modal" data-target="#modal">
+                    <i class="bi bi-calendar3"></i>&nbsp; Absen Sekarang
+                </button>
+                <div class="modal fade" id="modal">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <form id="formAbsensi">
+                                <div class="modal-header">
+                                    <h5 class="modal-title">Form Absensi</h5>
+                                </div>
+
+                                <div class="modal-body">
+
+                                    <div id="respon_error" class="text-danger"></div>
+                                    <input type="hidden" name="id" id="id">
+                                    <div class="text-center">
+
+
+                                        <video style="border: 1px solid grey; border-radius: 8px;" id="camera"
+                                            width="100%" height="260" autoplay></video>
+                                        {{-- <canvas style="border: 1px solid grey; border-radius: 8px;" id="canvas" width="100%" height="260" class="d-none"></canvas> --}}
+                                        <canvas id="canvas" width="350" height="260" class="d-none"></canvas>
+
+                                        <br>
+                                        <button style="border-radius: 8px !important;" type="button"
+                                            class="btn-sm btn-block btn btn-warning mt-2" id="btnCapture">
+                                            Ambil Foto
+                                        </button>
+
+                                        <input type="hidden" id="foto" name="foto">
+
+                                        <img id="previewFoto" src="" alt="Preview Foto"
+                                            style="border:1px solid grey; border-radius:8px; margin-top:10px; width:100%; height:auto; display:none;">
+
+                                    </div>
+
+                                    <hr>
+
+                                    <div class="row">
+                                        <div class="col-lg-6">
+                                            <div class="form-group">
+                                                <label>Latitude</label>
+                                                <input type="text" id="latitude" name="latitude"
+                                                    class="form-control" readonly>
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-6">
+                                            <div class="form-group">
+                                                <label>Longitude</label>
+                                                <input type="text" id="longitude" name="longitude"
+                                                    class="form-control" readonly>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group mt-2">
+                                        <label>Jarak Dari Kantor (Meter)</label>
+                                        <input type="text" id="jarak" name="jarak" readonly
+                                            class="form-control" placeholder="Jarak (meter)" required>
+                                        <span class="text-danger" style="font-size: 12px;">
+                                            *Update lokasi kerja anda agar sesuai dengan jarak lokasi kerja saat ini. Update
+                                            lokasi
+                                            kerja di
+                                            halaman
+                                            <a href="{{ url('/detail-user') }}?id={{ Auth::id() }}">Profil</a>
+                                        </span>
+                                    </div>
+
+                                    <iframe
+                                        style="margin-bottom: 10px; border: 1px solid grey; border-radius: 8px; height: 250px; width: 100%;"
+                                        src="https://www.google.com/maps?q=-3.4391476682335727,102.19011149551001&hl=id&z=13&output=embed"
+                                        allowfullscreen="" loading="lazy">
+                                    </iframe>
+                                </div>
+
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-danger" data-dismiss="modal">Tutup</button>
+                                    <button class="btn btn-primary" id="tombol_kirim">Absen</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-12 mt-4">
                 <div class="font-weight-bold text-warning mb-2">
                     JAM KERJA HARI INI <br>
                     {{ now() }}
@@ -251,10 +347,12 @@
                     <div class="bg-primary d-flex align-items-center justify-content-between text-center">
                         @php
                             $shift = DB::table('schedules')
-                                    ->leftjoin('shifts', 'shifts.id', '=', 'schedules.id_shift')
-                                    ->where('schedules.tanggal', date('Y-m-d'))->first();
+                                ->leftjoin('shifts', 'shifts.id', '=', 'schedules.id_shift')
+                                ->where('schedules.tanggal', date('Y-m-d'))
+                                ->first();
 
                             // dd($shift);
+
                         @endphp
                         <div class="flex-fill">
                             <div class="jam-label">Masuk</div>
@@ -276,10 +374,10 @@
                 <div class="font-weight-bold text-warning">MENU AKSES</div>
             </div>
             <a href="{{ url('list-absensi') }}" class="col-4 mt-2">
-                <div class="bg-primary d-flex flex-column justify-content-center align-items-center text-white"
+                <div class="menu-card bg-primary d-flex flex-column justify-content-center align-items-center text-white"
                     style="width: 100%; height: 65px; border-radius: 8px;">
                     <i style="font-size: 1rem;" class="bi bi-clock fs-2"></i>
-                    <span>Absensi</span>
+                    <span class="menu-text">Riwayat <br> Absensi</span>
                 </div>
             </a>
 
@@ -287,35 +385,35 @@
                 <div class="bg-primary d-flex flex-column justify-content-center align-items-center text-white"
                     style="width: 100%; height: 65px; border-radius: 8px;">
                     <i style="font-size: 1rem;" class="bi bi-file-earmark-text fs-2"></i>
-                    <span>Izin</span>
+                    <span class="menu-text">Izin</span>
                 </div>
             </a>
             <a href="{{ url('cuti') }}" class="col-4 mt-2">
                 <div class="bg-primary d-flex flex-column justify-content-center align-items-center text-white"
                     style="width: 100%; height: 65px; border-radius: 8px;">
                     <i style="font-size: 1rem;" class="bi bi-file-earmark-text fs-2"></i>
-                    <span>Cuti</span>
+                    <span class="menu-text">Cuti</span>
                 </div>
             </a>
             <a href="#" class="col-4 mt-4">
                 <div class="bg-primary d-flex flex-column justify-content-center align-items-center text-white"
                     style="width: 100%; height: 65px; border-radius: 8px;">
                     <i style="font-size: 1rem;" class="bi bi-file-earmark-text fs-2"></i>
-                    <span>LKH</span>
+                    <span class="menu-text">LKH</span>
                 </div>
             </a>
             <a href="{{ url('laporan-shift') }}" class="col-4 mt-4">
                 <div class="bg-primary d-flex flex-column justify-content-center align-items-center text-white"
                     style="width: 100%; height: 65px; border-radius: 8px;">
                     <i style="font-size: 1rem;" class="bi bi-bar-chart fs-2"></i>
-                    <span>Rekap</span>
+                    <span class="menu-text">Rekap</span>
                 </div>
             </a>
-            <a href="{{ url('detail-user')}}?id={{ Auth::id() }}" class="col-4 mt-4">
+            <a href="{{ url('detail-user') }}?id={{ Auth::id() }}" class="col-4 mt-4">
                 <div class="bg-primary d-flex flex-column justify-content-center align-items-center text-white"
                     style="width: 100%; height: 65px; border-radius: 8px;">
                     <i style="font-size: 1rem;" class="bi bi-person-circle fs-2"></i>
-                    <span>Profile</span>
+                    <span class="menu-text">Profile</span>
                 </div>
             </a>
 
@@ -349,6 +447,12 @@
     @endif
 @endsection
 @push('script')
+    <script>
+        window.APP_DATA = {
+            lokasiKantor: @json($data)
+        };
+    </script>
+    <script src="{{ asset('js/backend/absensi/index.js') }}"></script>
     @if (Auth::user()->role == 'Admin')
         <script src="https://code.highcharts.com/highcharts.js"></script>
         <script>
