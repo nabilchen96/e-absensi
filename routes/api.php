@@ -26,6 +26,9 @@ Route::middleware('auth:sanctum')->group(function () {
     //SHIFT
     Route::get('/data-shift', 'App\Http\Controllers\Api\ShiftController@index');
     
+    //SCHEDULE
+    Route::get('/data-schedule', 'App\Http\Controllers\Api\ScheduleController@index');
+
     
     Route::post('/logout', 'App\Http\Controllers\Api\AuthController@logout');
 });
