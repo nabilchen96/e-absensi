@@ -74,58 +74,58 @@ $('#modal').on('show.bs.modal', function (event) {
     }
 });
 
-form.onsubmit = (e) => {
+// form.onsubmit = (e) => {
 
-    let formData = new FormData(form);
+//     let formData = new FormData(form);
 
-    document.getElementById('respon_error').innerHTML = ``
+//     document.getElementById('respon_error').innerHTML = ``
 
-    e.preventDefault();
+//     e.preventDefault();
 
-    document.getElementById("tombol_kirim").disabled = true;
+//     document.getElementById("tombol_kirim").disabled = true;
 
-    axios({
-        method: 'post',
-        url: formData.get('id') == '' ? '/store-user' : '/update-user',
-        data: formData,
-    })
-        .then(function (res) {
-            //handle success         
-            if (res.data.responCode == 1) {
+//     axios({
+//         method: 'post',
+//         url: formData.get('id') == '' ? '/store-user' : '/update-user',
+//         data: formData,
+//     })
+//         .then(function (res) {
+//             //handle success         
+//             if (res.data.responCode == 1) {
 
-                Swal.fire({
-                    icon: 'success',
-                    title: 'Sukses',
-                    text: res.data.respon,
-                    timer: 3000,
-                    showConfirmButton: false
-                })
+//                 Swal.fire({
+//                     icon: 'success',
+//                     title: 'Sukses',
+//                     text: res.data.respon,
+//                     timer: 3000,
+//                     showConfirmButton: false
+//                 })
 
-                $("#modal").modal("hide");
-                $('#myTable').DataTable().clear().destroy();
-                getData()
+//                 $("#modal").modal("hide");
+//                 $('#myTable').DataTable().clear().destroy();
+//                 getData()
 
-            } else {
-                //respon 
-                let respon_error = ``
-                Object.entries(res.data.respon).forEach(([field, messages]) => {
-                    messages.forEach(message => {
-                        respon_error += `<li>${message}</li>`;
-                    });
-                });
+//             } else {
+//                 //respon 
+//                 let respon_error = ``
+//                 Object.entries(res.data.respon).forEach(([field, messages]) => {
+//                     messages.forEach(message => {
+//                         respon_error += `<li>${message}</li>`;
+//                     });
+//                 });
 
-                document.getElementById('respon_error').innerHTML = respon_error
+//                 document.getElementById('respon_error').innerHTML = respon_error
 
-            }
+//             }
 
-            document.getElementById("tombol_kirim").disabled = false;
-        })
-        .catch(function (res) {
-            document.getElementById("tombol_kirim").disabled = false;
-            //handle error
-            console.log(res);
-        });
-}
+//             document.getElementById("tombol_kirim").disabled = false;
+//         })
+//         .catch(function (res) {
+//             document.getElementById("tombol_kirim").disabled = false;
+//             //handle error
+//             console.log(res);
+//         });
+// }
 
 hapusData = (id) => {
     Swal.fire({

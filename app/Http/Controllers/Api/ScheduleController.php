@@ -63,8 +63,6 @@ class ScheduleController extends Controller
         $query->orderBy('users.name', 'asc')
             ->orderBy('tanggal', 'asc');
 
-        return response()->json([
-            'data' => $query->get()
-        ]);
+        return response()->json($query->get());
     }
 }
