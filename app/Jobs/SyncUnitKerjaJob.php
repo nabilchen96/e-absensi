@@ -24,6 +24,8 @@ class SyncUnitKerjaJob implements ShouldQueue
         while (true) {
 
             $response = Http::withToken('2y10Q71xkKprwaAZLzn0vhVnuepOFZoauSQokJqhJhPLlWpETCX8daNwa')
+                ->timeout(60)              // ⬅️ naikkan timeout
+                ->retry(3, 2000) 
                 ->get('https://pandu.bengkuluutarakab.go.id/api/data-unit-kerja', [
                     'page' => $page,
                     'per_page' => $perPage,
@@ -57,6 +59,7 @@ class SyncUnitKerjaJob implements ShouldQueue
             }
 
             $page++;
+            sleep(1); // ⬅️ penting
         }
     }
 }

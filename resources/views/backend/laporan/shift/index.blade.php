@@ -41,7 +41,7 @@
                                     <th>Scan Masuk</th>
                                     <th>Scan Pulang</th>
                                     <th>Terlambat</th>
-                                    <th>Pulang Cepat</th>
+                                    {{-- <th>Pulang Cepat</th> --}}
                                     <th>Total</th>
                                     <th>Status</th>
                                 </tr>

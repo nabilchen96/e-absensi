@@ -21,7 +21,7 @@ class UserController extends Controller
     {
         $keyword = $request->keyword;
 
-        $query = DB::table('users')->where('role', 'Admin');
+        $query = DB::table('users')->whereNotIn('role', ['Pegawai']);
 
         // Jika keyword ada
         if ($keyword) {

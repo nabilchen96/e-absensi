@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use App\Jobs\SyncUsersJob;
 use App\Jobs\SyncUnitKerjaJob;
+use App\Jobs\SyncBukanPegawaiJob;
 
 /*
 |--------------------------------------------------------------------------
@@ -113,6 +114,12 @@ Route::group(['middleware' => 'auth'], function () {
     Route::get('/sync-lokasi-kerja', function () {
         SyncUnitKerjaJob::dispatch();
         return response()->json(['message' => 'Sinkronisasi sedang berjalan di background.']);
+    });
+
+    //SINKRONISASI DATA LOKASI KERJA
+    Route::get('/sync-bukan-pegawai', function () {
+        SyncBukanPegawaiJob::dispatch();
+        return response()->json(['message' => 'Sinkronisasi User sedang berjalan di background.']);
     });
 });
 

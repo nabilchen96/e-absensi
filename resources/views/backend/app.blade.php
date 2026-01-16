@@ -221,6 +221,29 @@
             });
 
         });
+
+        $('#btnSyncBukanPegawai').click(function() {
+            $.ajax({
+                url: '/sync-bukan-pegawai',
+                type: 'GET',
+                success: function(res) {
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Berhasil!',
+                        text: res.message,
+                        timer: 3000
+                    });
+                },
+                error: function() {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: 'Terjadi kesalahan saat memulai sinkronisasi'
+                    });
+                }
+            });
+
+        });
     </script>
 </body>
 

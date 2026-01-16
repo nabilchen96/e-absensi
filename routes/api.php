@@ -17,3 +17,15 @@ use Illuminate\Support\Facades\Route;
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
+
+// LOGIN
+Route::post('/login', 'App\Http\Controllers\Api\AuthController@login');
+
+Route::middleware('auth:sanctum')->group(function () {
+    
+    //SHIFT
+    Route::get('/data-shift', 'App\Http\Controllers\Api\ShiftController@index');
+    
+    
+    Route::post('/logout', 'App\Http\Controllers\Api\AuthController@logout');
+});

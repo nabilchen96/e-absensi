@@ -101,7 +101,7 @@ function getData() {
                     const waktu = row.scan_masuk ? row.scan_masuk.split(" ")[1] : "";
                     return `
                         <b class="d-md-none">Scan Masuk: </b>
-                        <br class="d-md-none"> ${waktu}
+                        <br class="d-md-none"> ${row.scan_masuk}
                     `;
                 }
             },
@@ -110,7 +110,7 @@ function getData() {
                     const waktu1 = row.scan_pulang ? row.scan_pulang.split(" ")[1] : "";
                     return `
                         <b class="d-md-none">Scan Masuk: </b>
-                        <br class="d-md-none"> ${waktu1}
+                        <br class="d-md-none"> ${row.scan_pulang}
                     `;
                 }
             },
@@ -119,11 +119,11 @@ function getData() {
                     <b class="d-md-none">Terlambat: </b>
                     <br class="d-md-none"> ${row.terlambat}`
             },
-            {
-                render: (data, type, row) => `
-                    <b class="d-md-none">Pulang Cepat: </b>
-                    <br class="d-md-none"> ${row.pulang_cepat}`
-            },
+            // {
+            //     render: (data, type, row) => `
+            //         <b class="d-md-none">Pulang Cepat: </b>
+            //         <br class="d-md-none"> ${row.pulang_cepat}`
+            // },
             {
                 render: (data, type, row) => `
                     <b class="d-md-none">Total Jam: </b>
