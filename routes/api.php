@@ -28,6 +28,9 @@ Route::middleware('auth:sanctum')->group(function () {
     
     //SCHEDULE
     Route::get('/data-schedule', 'App\Http\Controllers\Api\ScheduleController@index');
+    Route::post('/store-schedule', 'App\Http\Controllers\Api\ScheduleController@store');
+    Route::post('/update-schedule', 'App\Http\Controllers\Api\ScheduleController@update');
+    Route::post('/delete-schedule', 'App\Http\Controllers\Api\ScheduleController@delete');
 
     
     Route::post('/logout', 'App\Http\Controllers\Api\AuthController@logout');

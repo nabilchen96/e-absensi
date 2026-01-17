@@ -119,7 +119,7 @@ class ScheduleController extends Controller
             'id' => 'required',
             'id_user' => 'required',
             'id_shift' => 'required',
-            'tanggal' => 'required|date',
+            'tanggal_dari' => 'required|date',
         ]);
 
         if ($val->fails()) {

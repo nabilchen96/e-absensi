@@ -5,6 +5,8 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use DB;
+use Illuminate\Support\Facades\Validator;
+use App\Models\Schedule;
 
 class ScheduleController extends Controller
 {
@@ -64,5 +66,113 @@ class ScheduleController extends Controller
             ->orderBy('tanggal', 'asc');
 
         return response()->json($query->get());
+    }
+
+    public function store(Request $request)
+    {
+        $val = Validator::make($request->all(), [
+            'id_pandu' => 'required',
+            'id_shift' => 'required',
+            'tanggal_dari' => 'required|date',
+            'tanggal_ke' => 'required|date',
+        ]);
+
+        if ($val->fails()) {
+            return response()->json([
+                'responCode' => 0,
+                'respon' => $val->errors()
+            ]);
+        }
+
+        DB::beginTransaction();
+
+        try {
+
+            // Looping tanggal
+            $start = strtotime($request->tanggal_dari);
+            $end   = strtotime($request->tanggal_ke);
+
+            //GET DATA USER
+            $user = DB::table('users')->where('id_pandu', $request->id_pandu)->first();
+
+            while ($start <= $end) {
+                Schedule::updateOrCreate(
+                    [
+                        'id_user' => $user->id,
+                        'id_shift' => $request->id_shift,
+                        'tanggal' => date('Y-m-d', $start),
+                    ],
+                    [
+                        'id_user' => $user->id,
+                        'id_shift' => $request->id_shift,
+                        'tanggal' => date('Y-m-d', $start),
+                    ]
+                );
+
+                // Tambah 1 hari
+                $start = strtotime("+1 day", $start);
+            }
+
+            DB::commit();
+
+            return response()->json([
+                'responCode' => 1,
+                'respon' => 'Schedule berhasil ditambahkan'
+            ]);
+
+        } catch (\Exception $e) {
+
+            DB::rollBack();
+
+            return response()->json([
+                'responCode' => 0,
+                'respon'     => 'Gagal menyimpan schedule',
+                'error'        => $e->getMessage()
+
+            ], 500);
+        }
+    }
+
+    public function update(Request $request)
+    {
+        $val = Validator::make($request->all(), [
+            'id' => 'required',
+            'id_pandu' => 'required',
+            'id_shift' => 'required',
+            'tanggal_dari' => 'required|date',
+        ]);
+
+        if ($val->fails()) {
+            return response()->json([
+                'responCode' => 0,
+                'respon' => $val->errors()
+            ]);
+        }
+
+        //GET DATA USER
+        $user = DB::table('users')->where('id_pandu', $request->id_pandu)->first();
+
+
+        $data = Schedule::find($request->id);
+        $data->update([
+            'id_user' => $user->id,
+            'id_shift' => $request->id_shift,
+            'tanggal' => $request->tanggal_dari,
+        ]);
+
+        return response()->json([
+            'responCode' => 1,
+            'respon' => 'Schedule berhasil diperbarui'
+        ]);
+    }
+
+    public function delete(Request $request)
+    {
+        Schedule::find($request->id)->delete();
+
+        return response()->json([
+            'responCode' => 1,
+            'respon' => 'Schedule berhasil dihapus'
+        ]);
     }
 }
