@@ -100,7 +100,7 @@
 
                         <div class="form-group mt-2">
                             <label>Lokasi Kerja</label>
-                            <select requried class="form-control" name="id_lokasi_kerja" id="id_lokasi_kerja">
+                            <select required class="form-control" name="id_lokasi_kerja" id="id_lokasi_kerja">
                                 <option value="">Pilih Lokasi Kerja</option>
                                 @php
                                     @$lk = DB::table('lokasi_kerja_users')
