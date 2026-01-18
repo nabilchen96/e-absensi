@@ -192,13 +192,13 @@
                                         <th>Lokasi</th>
                                         <th>Latitude</th>
                                         <th>Longitude</th>
-                                        <th style="width: 5px !important;">Aksi</th>
+                                        <th>Aksi</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     @foreach ($lokasi as $item)
                                         <tr>
-                                            <td>{{ $item->lokasi_kerja }}</td>
+                                            <td style="width: 50%; white-space: unset !important;">{{ $item->lokasi_kerja }}</td>
                                             <td>{{ $item->latitude }}</td>
                                             <td>{{ $item->longitude }}</td>
                                             <td style="width: 5px !important;">
