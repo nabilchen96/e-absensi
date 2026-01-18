@@ -6,10 +6,24 @@ document.addEventListener('DOMContentLoaded', function () {
 
 const kantor = window.APP_DATA.lokasiKantor;
 
-const kantorLat = parseFloat(kantor.latitude);
-const kantorLng = parseFloat(kantor.longitude);
+let kantorLat = null;
+let kantorLng = null;
 let map;           // global map variable
 let markerUser;
+
+$("#id_lokasi_kerja").on("change", function () {
+
+    const selected = $(this).find(":selected");
+
+    kantorLat = parseFloat(selected.data("lat"));
+    kantorLng = parseFloat(selected.data("lng"));
+
+    console.log(kantorLat, kantorLng);
+
+    getLocation()
+    
+});
+
 
 function hitungJarak(lat1, lng1, lat2, lng2) {
 

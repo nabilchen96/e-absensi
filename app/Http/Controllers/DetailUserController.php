@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\DetailUser;
+use App\Models\LokasiKerjaUser;
 use Illuminate\Support\Facades\Validator;
 use DB;
 
@@ -25,8 +26,20 @@ class DetailUserController extends Controller
                 )
                 ->first();
 
+        $lokasiKerjaUser = DB::table('lokasi_kerja_users')
+                            ->leftjoin('users', 'users.id', '=', 'lokasi_kerja_users.id_user')
+                            ->leftjoin('lokasi_kerjas', 'lokasi_kerjas.id', '=', 'lokasi_kerja_users.id_lokasi_kerja')
+                            ->select(
+                                'lokasi_kerjas.lokasi_kerja',
+                                'lokasi_kerjas.latitude',
+                                'lokasi_kerjas.longitude', 
+                                'lokasi_kerja_users.id'
+                            )
+                            ->get();
+
         return view('backend.detail_user.index', [
-            'data' => $data
+            'data' => $data, 
+            'lokasi' => $lokasiKerjaUser
         ]);
     }
 
@@ -40,8 +53,6 @@ class DetailUserController extends Controller
                 'email' => 'required|email',
                 'name' => 'required|string',
             ]);
-
-            // dd($request->all());
 
             // 5. Simpan ke detail_users
             DetailUser::updateOrCreate(
@@ -67,4 +78,36 @@ class DetailUserController extends Controller
         }
     }
 
+    public function storeLokasiKerjaUser(Request $request)
+    {
+
+        try {
+
+            // 5. Simpan ke detail_users
+            LokasiKerjaUser::create(
+                [
+                    'id_user' => $request->id_user,
+                    'id_lokasi_kerja' => $request->id_lokasi_kerja
+                ]
+            );
+
+            return redirect()->back()->with('success', 'Data berhasil disimpan');
+
+        } catch (\Exception $e) {
+
+            return back()->with('error', 'Gagal menyimpan data: ' . $e->getMessage());
+        }
+    }
+
+    public function deleteLokasiKerjaUser(Request $request)
+    {
+        // dd($request->all());
+
+        LokasiKerjaUser::find($request->id)->delete();
+
+        return response()->json([
+            'responCode' => 1,
+            'respon' => 'Lokasi Kerja User berhasil dihapus'
+        ]);
+    }
 }

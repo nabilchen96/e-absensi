@@ -99,6 +99,33 @@
                         </div>
 
                         <div class="form-group mt-2">
+                            <label>Lokasi Kerja</label>
+                            <select requried class="form-control" name="id_lokasi_kerja" id="id_lokasi_kerja">
+                                <option value="">Pilih Lokasi Kerja</option>
+                                @php
+                                    @$lk = DB::table('lokasi_kerja_users')
+                                        ->leftjoin(
+                                            'lokasi_kerjas',
+                                            'lokasi_kerjas.id',
+                                            '=',
+                                            'lokasi_kerja_users.id_lokasi_kerja',
+                                        )
+                                        ->select(
+                                            'lokasi_kerjas.*'
+                                        )
+                                        ->where('lokasi_kerja_users.id_user', Auth::id())
+                                        ->get();
+                                @endphp
+                                @forelse (@$lk as $item)
+                                    <option data-lat="{{ $item->latitude }}" data-lng="{{ $item->longitude }}"
+                                        value="{{ $item->id }}">{{ $item->lokasi_kerja }}</option>
+                                @empty
+                                    <option value="">Belum Ada Lokasi Kerja</option>
+                                @endforelse
+                            </select>
+                        </div>
+
+                        <div class="form-group mt-2">
                             <label>Jarak Dari Kantor (Meter)</label>
                             <input type="text" id="jarak" name="jarak" readonly class="form-control"
                                 placeholder="Jarak (meter)" required>

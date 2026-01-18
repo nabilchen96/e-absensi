@@ -49,7 +49,7 @@ $("#btnResetFilter").click(function () {
 
 //LOAD DATA
 function getData() {
-    table = $("#myTable").DataTable({
+    table =     
         ordering: true,
         processing: true,
         searching: false,

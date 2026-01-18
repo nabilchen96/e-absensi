@@ -50,6 +50,8 @@ Route::group(['middleware' => 'auth'], function () {
     //DETAIL USER
     Route::get('/detail-user', 'App\Http\Controllers\DetailUserController@index');
     Route::post('/store-detail-user', 'App\Http\Controllers\DetailUserController@store');
+    Route::post('/store-lokasi-kerja-user', 'App\Http\Controllers\DetailUserController@storeLokasiKerjaUser');
+    Route::post('/delete-lokasi-kerja-user', 'App\Http\Controllers\DetailUserController@deleteLokasiKerjaUser');
 
     // SHIFT CRUD
     Route::get('/shift', 'App\Http\Controllers\ShiftController@index');

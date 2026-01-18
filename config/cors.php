@@ -19,16 +19,27 @@ return [
 
     'allowed_methods' => ['*'],
 
-    'allowed_origins' => ['*'],
+    'allowed_origins' => [
+        'https://absensipegawai.my.id',
+        'https://www.absensipegawai.my.id',
+        'https://app.absensipegawai.my.id',
+        'https://pandu.bengkuluutarakab.go.id',
+        'http://localhost:8000',
+        'http://127.0.0.1:8000',
+    ],
 
     'allowed_origins_patterns' => [],
 
     'allowed_headers' => ['*'],
 
-    'exposed_headers' => [],
+    'exposed_headers' => [
+        'Authorization',
+        'X-Requested-With',
+        'Content-Type',
+    ],
 
     'max_age' => 0,
 
-    'supports_credentials' => false,
+    'supports_credentials' => true,
 
 ];
