@@ -80,7 +80,7 @@
             </div>
         </div>
     </div>
-    @if (Auth::user()->role == 'Admin')
+    @if (Auth::user()->role != 'Pegawai')
         <div class="row">
             <div class="col-lg-12 mt-4">
                 <div class="card shadow">
@@ -108,7 +108,7 @@
                             </span>
                         </b>
                         <div class="table-responsive mt-3" style="max-height: 400px; overflow-y: auto;">
-                            <table id="myTable" class="table-bordered table table-striped" style="width: 100%;">
+                            <table class="table-bordered table table-striped" style="width: 100%;">
                                 <thead style="position: sticky; top: 0;" class="bg-info text-white">
                                     <tr>
                                         <th width="50%">User</th>
@@ -168,7 +168,7 @@
                             </span>
                         </b>
                         <div class="table-responsive mt-3" style="max-height: 400px; overflow-y: auto;">
-                            <table id="myTable" class="table table-bordered table-striped" style="width: 100%;">
+                            <table class="table table-bordered table-striped" style="width: 100%;">
                                 <thead style="position: sticky; top: 0;" class="bg-info text-white">
                                     <tr>
                                         <th width="50%">User</th>
@@ -239,8 +239,8 @@
                             </div>
                             <div class="profile-text">
                                 @php
-                                    $profil = DB::table('detail_users')->where('user_id', Auth::id())->first();
-                                    $lokasi = DB::table('lokasi_kerjas')->where('id', $profil->satuan_kerja)->first();
+                                    @$profil = DB::table('detail_users')->where('user_id', Auth::id())->first();
+                                    @$lokasi = DB::table('lokasi_kerjas')->where('id', $profil->satuan_kerja)->first();
                                 @endphp
                                 <b>NIP.</b> {{ $profil->nip }}<br>
                                 <b>Jabatan.</b> {{ $profil->jabatan }}<br>
@@ -479,7 +479,7 @@
         };
     </script>
     <script src="{{ asset('js/backend/absensi/index.js') }}"></script>
-    @if (Auth::user()->role == 'Admin')
+    @if (Auth::user()->role != 'Pegawai')
         <script src="https://code.highcharts.com/highcharts.js"></script>
         <script>
             let today = new Date();

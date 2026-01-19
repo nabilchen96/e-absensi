@@ -25,7 +25,15 @@
                 <span class="menu-title">Dashboard</span>
             </a>
         </li>
-        @if (Auth::user()->role == 'Admin')
+        @if (
+            Auth::user()->role == 'Admin' ||
+            Auth::user()->role == 'Kabid BKPSDM' ||
+            Auth::user()->role == 'Sekretaris BKPSDM' ||
+            Auth::user()->role == 'Kepala BKPSDM' ||
+            Auth::user()->role == 'Staff BKPSDM' ||
+            Auth::user()->role == 'SKPD' ||
+            Auth::user()->role == 'OPD'
+        )
             <li class="nav-item">
                 <a class="nav-link" data-toggle="collapse" href="#ui-basic" aria-expanded="false"
                     aria-controls="ui-basic">
@@ -57,7 +65,7 @@
                 </div>
             </li>
         @endif
-        @if (Auth::user()->role != 'Admin')
+        @if (Auth::user()->role == 'Pegawai')
             <li class="nav-item">
                 <a class="nav-link" href="{{ url('daftar-pegawai') }}">
                     <i class="icon-grid bi bi-person-circle menu-icon"></i>
