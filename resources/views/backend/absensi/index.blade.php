@@ -110,31 +110,28 @@
                                             '=',
                                             'lokasi_kerja_users.id_lokasi_kerja',
                                         )
-                                        ->select(
-                                            'lokasi_kerjas.*'
-                                        )
+                                        ->select('lokasi_kerjas.*')
                                         ->where('lokasi_kerja_users.id_user', Auth::id())
                                         ->get();
                                 @endphp
-                                @forelse (@$lk as $item)
+                                @foreach (@$lk as $item)
                                     <option data-lat="{{ $item->latitude }}" data-lng="{{ $item->longitude }}"
                                         value="{{ $item->id }}">{{ $item->lokasi_kerja }}</option>
-                                @empty
-                                    <option value="">Belum Ada Lokasi Kerja</option>
-                                @endforelse
+                                @endforeach
                             </select>
-                        </div>
-
-                        <div class="form-group mt-2">
-                            <label>Jarak Dari Kantor (Meter)</label>
-                            <input type="text" id="jarak" name="jarak" readonly class="form-control"
-                                placeholder="Jarak (meter)" required>
                             <span class="text-danger" style="font-size: 12px;">
                                 *Update lokasi kerja anda agar sesuai dengan jarak lokasi kerja saat ini. Update lokasi
                                 kerja di
                                 halaman
                                 <a href="{{ url('/detail-user') }}?id={{ Auth::id() }}">Profil</a>
                             </span>
+                        </div>
+
+                        <div class="form-group mt-2">
+                            <label>Jarak Dari Kantor (Meter)</label>
+                            <input type="text" id="jarak" name="jarak" readonly class="form-control"
+                                placeholder="Jarak (meter)" required>
+                            <span class="text-info" style="font-size: 12px;" id="notifikasi_jarak"></span>
                         </div>
 
                         <iframe

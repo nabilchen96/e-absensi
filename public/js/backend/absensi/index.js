@@ -21,7 +21,7 @@ $("#id_lokasi_kerja").on("change", function () {
     console.log(kantorLat, kantorLng);
 
     getLocation()
-    
+
 });
 
 
@@ -311,50 +311,68 @@ $("#btnCapture").click(function () {
 // GET LOCATION
 // =========================
 function getLocation() {
-    if (navigator.geolocation) {
-        navigator.geolocation.getCurrentPosition(function (pos) {
-
-            const userLat = pos.coords.latitude;
-            const userLng = pos.coords.longitude;
-
-            $("#latitude").val(userLat);
-            $("#longitude").val(userLng);
-
-            console.log(kantorLat, kantorLng);
-
-
-            // hitung jarak ke kantor
-            const jarak = hitungJarak(
-                userLat,
-                userLng,
-                kantorLat,
-                kantorLng
-            );
-
-            // console.log("Jarak ke kantor:", jarak.toFixed(2), "meter");
-
-            // validasi perimeter
-            // if (jarak <= radiusKantor) {
-            //     console.log("✅ DALAM PERIMETER KANTOR");
-            //     $("#statusLokasi").val("DALAM");
-            // } else {
-            //     console.log("❌ DI LUAR PERIMETER KANTOR");
-            //     $("#statusLokasi").val("LUAR");
-            // }
-
-            // kalau mau ditampilkan ke UI
-            $("#jarak").val(
-                jarak.toLocaleString('id-ID', {
-                    minimumFractionDigits: 3,
-                    maximumFractionDigits: 3
-                })
-            );
-
-        }, function (error) {
-            alert("Gagal mengambil lokasi");
-        });
+    if (!navigator.geolocation) {
+        alert("Browser tidak mendukung GPS");
+        return;
     }
+
+    navigator.geolocation.getCurrentPosition(function (pos) {
+
+        const userLat = pos.coords.latitude;
+        const userLng = pos.coords.longitude;
+
+        $("#latitude").val(userLat);
+        $("#longitude").val(userLng);
+
+        // ===============================
+        // VALIDASI LOKASI KERJA DIPILIH
+        // ===============================
+        if (
+            !kantorLat || !kantorLng || 
+            isNaN(kantorLat) || isNaN(kantorLng)
+        ) {
+            // kosongkan jika "Pilih Lokasi Kerja"
+            $("#jarak").val("");
+            $("#notifikasi_jarak").html("");
+            return; // stop proses
+        }
+
+        // ===============================
+        // HITUNG JARAK
+        // ===============================
+        const jarak = hitungJarak(
+            userLat,
+            userLng,
+            parseFloat(kantorLat),
+            parseFloat(kantorLng)
+        ); // meter
+
+        // tampilkan ke input jarak
+        $("#jarak").val(
+            jarak.toLocaleString('id-ID', {
+                minimumFractionDigits: 3,
+                maximumFractionDigits: 3
+            })
+        );
+
+        // ===============================
+        // NOTIFIKASI JARAK
+        // ===============================
+        if (jarak > 50) {
+            $("#notifikasi_jarak").html(
+                `Jarak dari kantor adalah <b>${jarak.toFixed(2)} meter</b>, Anda <b>tidak berada di lokasi kerja</b>.`
+            ).removeClass("text-success").addClass("text-danger");
+        } else {
+            $("#notifikasi_jarak").html(
+                `Jarak dari kantor adalah <b>${jarak.toFixed(2)} meter</b>, Anda <b>berada di lokasi kerja</b>.`
+            ).removeClass("text-danger").addClass("text-success");
+        }
+
+    }, function () {
+        alert("Gagal mengambil lokasi");
+    });
 }
+
 
 
 

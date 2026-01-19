@@ -310,9 +310,28 @@
                                     </div>
 
                                     <div class="form-group mt-2">
-                                        <label>Jarak Dari Kantor (Meter)</label>
-                                        <input type="text" id="jarak" name="jarak" readonly
-                                            class="form-control" placeholder="Jarak (meter)" required>
+                                        <label>Lokasi Kerja</label>
+                                        <select required class="form-control" name="id_lokasi_kerja"
+                                            id="id_lokasi_kerja">
+                                            <option value="">Pilih Lokasi Kerja</option>
+                                            @php
+                                                @$lk = DB::table('lokasi_kerja_users')
+                                                    ->leftjoin(
+                                                        'lokasi_kerjas',
+                                                        'lokasi_kerjas.id',
+                                                        '=',
+                                                        'lokasi_kerja_users.id_lokasi_kerja',
+                                                    )
+                                                    ->select('lokasi_kerjas.*')
+                                                    ->where('lokasi_kerja_users.id_user', Auth::id())
+                                                    ->get();
+                                            @endphp
+                                            @foreach (@$lk as $item)
+                                                <option data-lat="{{ $item->latitude }}"
+                                                    data-lng="{{ $item->longitude }}" value="{{ $item->id }}">
+                                                    {{ $item->lokasi_kerja }}</option>
+                                            @endforeach
+                                        </select>
                                         <span class="text-danger" style="font-size: 12px;">
                                             *Update lokasi kerja anda agar sesuai dengan jarak lokasi kerja saat ini. Update
                                             lokasi
@@ -320,6 +339,13 @@
                                             halaman
                                             <a href="{{ url('/detail-user') }}?id={{ Auth::id() }}">Profil</a>
                                         </span>
+                                    </div>
+
+                                    <div class="form-group mt-2">
+                                        <label>Jarak Dari Kantor (Meter)</label>
+                                        <input type="text" id="jarak" name="jarak" readonly
+                                            class="form-control" placeholder="Jarak (meter)" required>
+                                        <span class="text-info" style="font-size: 12px;" id="notifikasi_jarak"></span>
                                     </div>
 
                                     <iframe
