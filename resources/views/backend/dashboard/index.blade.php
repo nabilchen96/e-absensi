@@ -197,7 +197,7 @@
                                                 {{ $i->keterangan }}<br><br>
                                             </td>
                                             <td style="vertical-align: top !important;">
-                                                <a href="/storage/{{ $i->file }}" target="_blank"
+                                                <a href="/{{ $i->file }}" target="_blank"
                                                     class="text-primary">
                                                     <i class="bi bi-file-earmark-text"></i>
                                                 </a>

@@ -151,11 +151,11 @@
                                     </div>
 
                                     <!-- Satuan Kerja -->
-                                    {{-- <div class="col-lg-6">
+                                    <div class="col-lg-6">
                                         <div class="form-group">
                                             <label>Satuan Kerja</label>
 
-                                            <select name="satuan_kerja" id="satuan_kerja" required>
+                                            {{-- <select name="satuan_kerja" id="satuan_kerja" required>
                                                 <option value="">-- Pilih Lokasi --</option>
                                                 @php
                                                     $lokasis = DB::table('lokasi_kerjas')->get();
@@ -164,13 +164,13 @@
                                                     <option {{ $lokasi->id == $data->satuan_kerja ? 'selected' : '' }}
                                                         value="{{ $lokasi->id }}">{{ $lokasi->lokasi_kerja }}</option>
                                                 @endforeach
-                                            </select>
-
-                                            <span class="text-danger mt-2" style="font-size: 12px;">
+                                            </select> --}}
+                                            <input type="text" class="form-control" value="{{ $data->satuan_kerja }}">
+                                            {{-- <span class="text-danger mt-2" style="font-size: 12px;">
                                                 *Update satuan kerja agar jarak antar lokasi kerja dan lokasi anda sesuai
-                                            </span>
+                                            </span> --}}
                                         </div>
-                                    </div> --}}
+                                    </div>
 
                                 </div>
 
