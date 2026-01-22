@@ -25,15 +25,13 @@
                 <span class="menu-title">Dashboard</span>
             </a>
         </li>
-        @if (
-            Auth::user()->role == 'Admin' ||
-            Auth::user()->role == 'Kabid BKPSDM' ||
-            Auth::user()->role == 'Sekretaris BKPSDM' ||
-            Auth::user()->role == 'Kepala BKPSDM' ||
-            Auth::user()->role == 'Staff BKPSDM' ||
-            Auth::user()->role == 'SKPD' ||
-            Auth::user()->role == 'OPD'
-        )
+        @if (Auth::user()->role == 'Admin' ||
+                Auth::user()->role == 'Kabid BKPSDM' ||
+                Auth::user()->role == 'Sekretaris BKPSDM' ||
+                Auth::user()->role == 'Kepala BKPSDM' ||
+                Auth::user()->role == 'Staff BKPSDM' ||
+                Auth::user()->role == 'SKPD' ||
+                Auth::user()->role == 'OPD')
             <li class="nav-item">
                 <a class="nav-link" data-toggle="collapse" href="#ui-basic" aria-expanded="false"
                     aria-controls="ui-basic">
@@ -58,9 +56,11 @@
                         <li class="nav-item">
                             <a class="nav-link" href="{{ url('schedule') }}">Schedule</a>
                         </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="{{ url('pengumuman') }}">Pengumuman</a>
-                        </li>
+                        @if (Auth::user()->role == 'Admin')
+                            <li class="nav-item">
+                                <a class="nav-link" href="{{ url('pengumuman') }}">Pengumuman</a>
+                            </li>
+                        @endif
                     </ul>
                 </div>
             </li>

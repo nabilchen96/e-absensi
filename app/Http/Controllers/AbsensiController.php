@@ -34,31 +34,58 @@ class AbsensiController extends Controller
     {
         $keyword = $request->keyword;
 
-        $data = Absensi::with('user')
-            ->whereHas('user', function($q) use ($keyword){
-                if ($keyword) {
-                    $q->where('name', 'like', "%$keyword%");
-                }
-            })
-            ->orderBy('id', 'DESC');
+        $query = DB::table('absensis as a')
+            ->join('users as u', 'u.id', '=', 'a.user_id')
+            ->where('u.role', 'Pegawai')
+            ->orderBy('a.id', 'DESC');
 
-        if(Auth::user()->role == 'Admin'){
-            $data = $data->get();
-        }else{
-            $data = $data->where('user_id', Auth::id())->get();
+        // 🔍 keyword
+        if ($keyword) {
+            $query->where('u.name', 'like', "%$keyword%");
+        }
+
+        // 👑 ADMIN → semua data
+        if (Auth::user()->role == 'Admin') {
+
+            $data = $query->select('a.*', 'u.name')->get();
+
+        }
+        // 🏢 OPD → pegawai satu unit kerja
+        elseif (Auth::user()->role == 'OPD') {
+
+            $idUnitKerja = Auth::user()->id_unit_kerja_pandu;
+
+            $data = $query
+                ->join('lokasi_kerja_users as lku', 'lku.id_user', '=', 'u.id')
+                ->join('lokasi_kerjas as lk', 'lk.id', '=', 'lku.id_lokasi_kerja')
+                ->where('lk.id_pandu', $idUnitKerja)
+                ->select('a.*', 'u.name', 'lk.lokasi_kerja')
+                ->get();
+
+        }
+        // 👤 PEGAWAI → data sendiri
+        else {
+
+            $data = $query
+                ->where('a.user_id', Auth::id())
+                ->select('a.*', 'u.name')
+                ->get();
         }
 
         return response()->json(['data' => $data]);
     }
 
+
     public function store(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'foto'     => 'required',
-            'latitude' => 'required',
-            'longitude'=> 'required',
+            'foto'      => 'required',
+            'latitude'  => 'required',
+            'longitude' => 'required',
+            'jarak'     => 'required'
         ],[
-            'foto.required' => 'Klik Ambil Foto Terlebih Dahulu'
+            'foto.required'     => 'Klik Ambil Foto Terlebih Dahulu',
+            'jarak.required'    => 'Jarak Wajib Diisi, Pastikan Lokasi Kerja Memiliki Koordinat'
         ]);
 
         if ($validator->fails()) {

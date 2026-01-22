@@ -85,7 +85,7 @@ function getData() {
                     `;
                 }
             },
-            { render: (d, t, r) => r.user.name },
+            { data: 'name' },
             {
                 render: function (data, type, row, meta) {
                     return `

@@ -22,7 +22,15 @@ class PegawaiController extends Controller
     {
         $keyword = $request->keyword;
 
-        $query = DB::table('users')->where('role', 'Pegawai');
+        $query = DB::table('users')
+                ->select(
+                    'users.name',
+                    'users.role',
+                    'users.email',
+                    'users.created_at', 
+                    'users.id'
+                )
+                ->where('role', 'Pegawai');
 
         // Jika keyword ada
         if ($keyword) {
@@ -33,11 +41,28 @@ class PegawaiController extends Controller
             });
         }
 
+        // 🔐 ROLE PEGAWAI → hanya dirinya sendiri
         if(Auth::user()->role == 'Pegawai'){
 
             $user = $query->where('id', Auth::id())->get();
 
-        }else{
+        }
+
+        
+        // 🏢 ROLE OPD → pegawai dalam unit kerja yang sama
+        elseif (Auth::user()->role == 'OPD') {
+
+            $idUnitKerja = Auth::user()->id_unit_kerja_pandu; //107
+
+            $user = $query->leftjoin('lokasi_kerja_users', 'lokasi_kerja_users.id_user', '=', 'users.id')
+                    // ->leftjoin('lokasi_kerja_users', 'lokasi_kerja_users.id_lokasi_kerja', '=', 'lokasi_kerjas.id')
+                    ->leftjoin('lokasi_kerjas', 'lokasi_kerjas.id', '=', 'lokasi_kerja_users.id_lokasi_kerja')
+                    ->where('lokasi_kerjas.id_pandu', $idUnitKerja)->get();
+        }
+
+        
+        // ROLE UNTUK ADMIN
+        else{
 
             $user = $query->get();
         }

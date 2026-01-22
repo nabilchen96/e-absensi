@@ -26,6 +26,8 @@ class DetailUserController extends Controller
                 )
                 ->first();
 
+        // dd(Request('id'));
+
         $lokasiKerjaUser = DB::table('lokasi_kerja_users')
                             ->leftjoin('users', 'users.id', '=', 'lokasi_kerja_users.id_user')
                             ->leftjoin('lokasi_kerjas', 'lokasi_kerjas.id', '=', 'lokasi_kerja_users.id_lokasi_kerja')
@@ -35,6 +37,7 @@ class DetailUserController extends Controller
                                 'lokasi_kerjas.longitude', 
                                 'lokasi_kerja_users.id'
                             )
+                            ->where('users.id', Request('id'))
                             ->get();
 
         return view('backend.detail_user.index', [

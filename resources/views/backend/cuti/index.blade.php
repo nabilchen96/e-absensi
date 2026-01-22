@@ -143,6 +143,7 @@
                                     <th>User</th>
                                     <th>Tanggal</th>
                                     <th>Jenis</th>
+                                    <th>Status</th>
                                     <th width="25%">Keterangan</th>
                                     <th>File</th>
                                     <th width="5%">Aksi</th>
@@ -185,7 +186,33 @@
                                     $user = DB::table('users');
                                     if (Auth::user()->role == 'Admin') {
                                         $user = $user->get();
-                                    } else {
+                                    }
+
+                                    // 🏢 ROLE OPD → pegawai dalam unit kerja yang sama
+                                    elseif (Auth::user()->role == 'OPD') {
+                                        $idUnitKerja = Auth::user()->id_unit_kerja_pandu; //107
+
+                                        $user = $user
+                                            ->leftjoin(
+                                                'lokasi_kerja_users',
+                                                'lokasi_kerja_users.id_user',
+                                                '=',
+                                                'users.id',
+                                            )
+                                            // ->leftjoin('lokasi_kerja_users', 'lokasi_kerja_users.id_lokasi_kerja', '=', 'lokasi_kerjas.id')
+                                            ->leftjoin(
+                                                'lokasi_kerjas',
+                                                'lokasi_kerjas.id',
+                                                '=',
+                                                'lokasi_kerja_users.id_lokasi_kerja',
+                                            )
+                                            ->select('users.*')
+                                            ->where('lokasi_kerjas.id_pandu', $idUnitKerja)
+                                            ->get();
+                                    }
+
+                                    // ROLE PEGAWAI
+                                    else {
                                         $user = $user->where('id', Auth::id())->get();
                                     }
                                 @endphp
@@ -243,7 +270,57 @@
             </div>
         </div>
     </div>
+
+    <div class="modal fade" id="modalStatus" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+
+                <form id="formStatus">
+                    @csrf
+                    <ul id="respon_error" class="text-danger mb-4"></ul>
+                    <input type="hidden" id="id" name="id">
+
+                    <div class="modal-header">
+                        <h5 class="modal-title">Form Status Perizinan</h5>
+                        <button type="button" class="close" data-dismiss="modal">
+                            <span>&times;</span>
+                        </button>
+                    </div>
+
+                    <div class="modal-body">
+
+                        <div class="form-group">
+                            <label>Status <sup class="text-danger">*</sup> </label>
+                            <select class="form-control" name="status" id="status" required>
+                                <option value="">PILIH STATUS</option>
+                                <option>Diterima</option>
+                                <option>Ditolak</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Ubah Semua <sup class="text-danger">*</sup> </label><br>
+                            <input type="checkbox" name="ubah_semua" value="1">
+                            centang pilihan ini jika anda ingin merubah semua status dalam satu pengajuan yang sama
+                        </div>
+                    </div>
+
+                    <div class="modal-footer p-3">
+                        <button type="button" class="btn btn-danger btn-sm" data-dismiss="modal">Close</button>
+                        <button id="tombol_kirim" class="btn btn-primary btn-sm">Submit</button>
+                    </div>
+
+                </form>
+
+            </div>
+        </div>
+    </div>
 @endsection
 @push('script')
+    <script>
+        window.APP_DATA = {
+            role: @json(Auth::user()->role)
+        };
+    </script>
     <script src="{{ asset('js/backend/cuti/index.js') }}"></script>
 @endpush

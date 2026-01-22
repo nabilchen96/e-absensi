@@ -21,7 +21,13 @@ class UserController extends Controller
     {
         $keyword = $request->keyword;
 
-        $query = DB::table('users')->whereNotIn('role', ['Pegawai']);
+        $query = DB::table('users')
+                    ->leftjoin('lokasi_kerjas', 'lokasi_kerjas.id_pandu', '=', 'users.id_unit_kerja_pandu')
+                    ->select(
+                        'users.*', 
+                        'lokasi_kerjas.lokasi_kerja'
+                    )
+                    ->whereNotIn('role', ['Pegawai']);
 
         // Jika keyword ada
         if ($keyword) {
@@ -32,7 +38,14 @@ class UserController extends Controller
             });
         }
 
-        $user = $query->get();
+        if(Auth::user()->role == 'Admin'){
+
+            $user = $query->get();
+
+        }else{
+
+            $user = $query->where('users.id', Auth::id())->get();
+        }
 
         return response()->json(['data' => $user]);
     }
@@ -87,7 +100,7 @@ class UserController extends Controller
             $user = User::find($request->id);
             $user->update([
                 'name' => $request->name,
-                'role' => $request->role,
+                'role' => $request->role ?? $user->role,
                 'email' => $request->email,
                 'password' => $request->password ? Hash::make($request->password) : $user->password,
             ]);

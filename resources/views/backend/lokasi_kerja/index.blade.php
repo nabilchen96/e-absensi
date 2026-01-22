@@ -103,16 +103,18 @@
         <div class="col-12 mt-4">
             <div class="card w-100">
                 <div class="card-body">
+                    @if (Auth::user()->role == 'Admin')
+                        <button type="button" class="btn btn-primary btn-md mb-4 d-none d-md-inline-block"
+                            data-toggle="modal" data-target="#modal">
+                            Tambah
+                        </button>
+                        <button id="btnSyncLokasiKerja" class="btn btn-primary btn-md mb-4 d-none d-md-inline-block">Sinkron
+                            Lokasi</button>
 
-                    <button type="button" class="btn btn-primary btn-md mb-4 d-none d-md-inline-block" data-toggle="modal"
-                        data-target="#modal">
-                        Tambah
-                    </button>
-                    <button id="btnSyncLokasiKerja" class="btn btn-primary btn-md mb-4 d-none d-md-inline-block">Sinkron Lokasi</button>
-
-                    <button type="button" class="fab-add d-md-none" data-toggle="modal" data-target="#modal">
-                        <i class="bi bi-plus-lg"></i>
-                    </button>
+                        <button type="button" class="fab-add d-md-none" data-toggle="modal" data-target="#modal">
+                            <i class="bi bi-plus-lg"></i>
+                        </button>
+                    @endif
 
                     <div class="input-group mb-3">
                         <input type="text" class="form-control" id="searchInput" placeholder="Cari Lokasi Kerja ...">
@@ -157,7 +159,7 @@
                         <div class="form-group">
                             <label>Lokasi Kerja <sup class="text-danger">*</sup></label>
                             <input type="text" name="lokasi_kerja" id="lokasi_kerja" class="form-control form-control-sm"
-                            required placeholder="Lokasi Kerja">
+                                required placeholder="Lokasi Kerja">
                         </div>
 
                         <div class="form-group">

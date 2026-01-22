@@ -8,6 +8,8 @@ use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Auth;
+use Illuminate\Support\Str;
+
 
 class PerizinanController extends Controller
 {
@@ -29,6 +31,7 @@ class PerizinanController extends Controller
             ->whereIn('jenis', [
                 'Perjalanan Dinas', 'Pekerjaan Diluar Kantor'
             ])
+            ->orderBy('users.name', 'ASC')
             ->orderBy('tanggal', 'DESC');
 
         if ($keyword) {
@@ -40,7 +43,20 @@ class PerizinanController extends Controller
 
         if(Auth::user()->role == 'Admin'){
             $query = $query->get();
-        }else{
+        }
+        
+        // 🏢 ROLE OPD → pegawai dalam unit kerja yang sama
+        elseif(Auth::user()->role == 'OPD'){
+
+            $idUnitKerja = Auth::user()->id_unit_kerja_pandu; //107
+
+            $query = $query->leftjoin('lokasi_kerja_users', 'lokasi_kerja_users.id_user', '=', 'users.id')
+                    // ->leftjoin('lokasi_kerja_users', 'lokasi_kerja_users.id_lokasi_kerja', '=', 'lokasi_kerjas.id')
+                    ->leftjoin('lokasi_kerjas', 'lokasi_kerjas.id', '=', 'lokasi_kerja_users.id_lokasi_kerja')
+                    ->where('lokasi_kerjas.id_pandu', $idUnitKerja)->get();
+        }
+        
+        else{
             $query = $query->where('users.id', Auth::id())->get();
         }
 
@@ -71,12 +87,15 @@ class PerizinanController extends Controller
             $fileName = $request->file('file')->store('perizinan', 'public');
         }
 
+        $idPengajuan = 'PZN-' . now()->format('YmdHis') . '-' . Str::upper(Str::random(5));
+
         // Looping tanggal
         $start = strtotime($request->tanggal_awal);
         $end   = strtotime($request->tanggal_akhir);
 
         while ($start <= $end) {
             Perizinan::create([
+                'id_pengajuan' => $idPengajuan,
                 'user_id' => $request->user_id,
                 'tanggal' => date('Y-m-d', $start),
                 'jenis' => $request->jenis,
@@ -100,7 +119,6 @@ class PerizinanController extends Controller
             'id' => 'required',
             'user_id' => 'required',
             'tanggal' => 'required|date',
-            'jenis' => 'required|in:izin,cuti,dinas_luar',
             'file' => 'nullable|file|mimes:pdf|max:2048'
         ]);
 
@@ -135,6 +153,44 @@ class PerizinanController extends Controller
         return response()->json([
             'responCode' => 1,
             'respon' => 'Perizinan berhasil diperbarui'
+        ]);
+    }
+
+    public function updateStatus(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'id' => 'required',
+            'status' => 'required',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'responCode' => 0,
+                'respon' => $validator->errors(),
+            ]);
+        }
+
+        // Ambil data perizinan berdasarkan ID
+        $izin = Perizinan::findOrFail($request->id);
+
+        // Jika checkbox "ubah semua" dicentang
+        if ($request->has('ubah_semua')) {
+
+            Perizinan::where('id_pengajuan', $izin->id_pengajuan)
+                ->update([
+                    'status' => $request->status
+                ]);
+
+        } else {
+            // Update satu data saja
+            $izin->update([
+                'status' => $request->status
+            ]);
+        }
+
+        return response()->json([
+            'responCode' => 1,
+            'respon' => 'Status Perizinan berhasil diperbarui'
         ]);
     }
 

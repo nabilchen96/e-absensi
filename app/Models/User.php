@@ -22,7 +22,8 @@ class User extends Authenticatable
         'email',
         'password',
         'role',
-        'id_pandu'
+        'id_pandu',
+        'id_unit_kerja_pandu'
     ];
 
     /**

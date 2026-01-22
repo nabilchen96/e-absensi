@@ -48,7 +48,8 @@ class SyncBukanPegawaiJob implements ShouldQueue
                         'email' => $u['email'],
                         'password' => bcrypt('default123'),
                         'id_pandu'  => $u['id'],
-                        'role'  => $u['role']
+                        'role'  => $u['role'],
+                        'id_unit_kerja_pandu' => $u['id_unit_kerja']
                     ]
                 );
             }

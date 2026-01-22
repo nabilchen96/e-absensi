@@ -4,6 +4,8 @@ use Illuminate\Support\Facades\Route;
 use App\Jobs\SyncUsersJob;
 use App\Jobs\SyncUnitKerjaJob;
 use App\Jobs\SyncBukanPegawaiJob;
+use App\Jobs\SinkronLokasiKerjaUser;
+
 
 /*
 |--------------------------------------------------------------------------
@@ -95,12 +97,14 @@ Route::group(['middleware' => 'auth'], function () {
     Route::get('/data-perizinan', 'App\Http\Controllers\PerizinanController@data');
     Route::post('/store-perizinan', 'App\Http\Controllers\PerizinanController@store');
     Route::post('/delete-perizinan', 'App\Http\Controllers\PerizinanController@delete');
+    Route::post('/update-status-perizinan', 'App\Http\Controllers\PerizinanController@updateStatus');
 
     // CUTI
     Route::get('/cuti', 'App\Http\Controllers\CutiController@index');
     Route::get('/data-cuti', 'App\Http\Controllers\CutiController@data');
     Route::post('/store-cuti', 'App\Http\Controllers\CutiController@store');
     Route::post('/delete-cuti', 'App\Http\Controllers\CutiController@delete');
+    Route::post('/update-status-cuti', 'App\Http\Controllers\CutiController@updateStatus');
 
     // LAPORAN SHIFT CONTROLLER
     Route::get('/laporan-shift', 'App\Http\Controllers\LaporanShiftController@index');
@@ -121,6 +125,12 @@ Route::group(['middleware' => 'auth'], function () {
     //SINKRONISASI DATA LOKASI KERJA
     Route::get('/sync-bukan-pegawai', function () {
         SyncBukanPegawaiJob::dispatch();
+        return response()->json(['message' => 'Sinkronisasi User sedang berjalan di background.']);
+    });
+
+    //SINKRONISASI DATA LOKASI KERJA DENGAN LOKASI KERJA USERS
+    Route::get('/sync-lokasi-kerja-user', function () {
+        SinkronLokasiKerjaUser::dispatch();
         return response()->json(['message' => 'Sinkronisasi User sedang berjalan di background.']);
     });
 });

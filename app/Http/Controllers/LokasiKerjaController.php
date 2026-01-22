@@ -7,7 +7,7 @@ use Illuminate\Http\Request;
 use App\Models\LokasiKerja;
 use Illuminate\Support\Facades\Validator;
 use DB;
-
+use Auth;
 
 class LokasiKerjaController extends Controller
 {
@@ -23,10 +23,23 @@ class LokasiKerjaController extends Controller
         $query = DB::table('lokasi_kerjas');
 
         if ($keyword) {
-            $query->where('lokasi_kerja', 'like', "%$keyword%");
+            $query = $query->where('lokasi_kerja', 'like', "%$keyword%");
         }
 
-        return response()->json(['data' => $query->get()]);
+        if(Auth::user()->role == 'Admin'){
+            $query = $query->get();
+        }
+
+        elseif(Auth::user()->role == 'OPD'){
+            
+            $id_unit_kerja_pandu = Auth::user()->id_unit_kerja_pandu;
+            
+            $query = $query->where('id_pandu', $id_unit_kerja_pandu)->get();
+        }
+
+
+
+        return response()->json(['data' => $query]);
     }
 
     public function store(Request $request)

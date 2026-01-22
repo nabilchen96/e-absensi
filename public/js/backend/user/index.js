@@ -28,7 +28,11 @@ function getData() {
             },
             { data: "name" },
             { data: "email" },
-            { data: "role" },
+            { 
+                render: function (data, type, row, meta) {
+                    return `Role: ${row.role} <br> Unit: ${row.lokasi_kerja}`
+                }
+            },
             { data: "created_at" },
             {
                 render: function (data, type, row, meta) {

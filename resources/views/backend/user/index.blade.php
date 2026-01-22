@@ -14,18 +14,22 @@
             <div class="card w-100">
                 <div class="card-body">
 
-                    <button id="btnSyncBukanPegawai" class="btn btn-primary btn-md mb-4 d-none d-md-inline-block">Sinkron User</button>
+                    @if (Auth::user()->role == 'Admin')
+                        <button id="btnSyncBukanPegawai"
+                            class="btn btn-primary btn-md mb-4 d-none d-md-inline-block">Sinkron User</button>
 
 
-                    <button type="button" class="btn btn-primary btn-md mb-4 d-none d-md-inline-block" data-toggle="modal"
-                        data-target="#modal">
-                        Tambah
-                    </button>
-                    
-                    <!-- Floating Button Mobile -->
-                    <button type="button" class="fab-add d-md-none" data-toggle="modal" data-target="#modal">
-                        <i class="bi bi-plus-lg"></i>
-                    </button>
+                        <button type="button" class="btn btn-primary btn-md mb-4 d-none d-md-inline-block"
+                            data-toggle="modal" data-target="#modal">
+                            Tambah
+                        </button>
+
+                        <!-- Floating Button Mobile -->
+                        <button type="button" class="fab-add d-md-none" data-toggle="modal" data-target="#modal">
+                            <i class="bi bi-plus-lg"></i>
+                        </button>
+                    @endif
+
 
                     <div class="input-group mb-3">
                         <input type="text" class="form-control" id="searchInput" placeholder="Cari User ..."
@@ -83,13 +87,16 @@
                                 class="form-control form-control-sm">
                             <span class="text-danger error" style="font-size: 12px;" id="password_alert"></span>
                         </div>
-                        <div class="form-group">
-                            <label>Role <sup class="text-danger">*</sup></label>
-                            <select name="role" class="form-control" id="role" required>
-                                <option value="">PILIH ROLE</option>
-                                <option>Admin</option>
-                            </select>
-                        </div>
+                        @if(Auth::user()->role == 'Admin')
+                            <div class="form-group">
+                                <label>Role <sup class="text-danger">*</sup></label>
+                                <select name="role" class="form-control" id="role" required>
+                                    <option value="">PILIH ROLE</option>
+                                    <option>Admin</option>
+                                    <option>OPD</option>
+                                </select>
+                            </div>
+                        @endif
                     </div>
                     <div class="modal-footer p-3">
                         <button type="button" class="btn btn-danger btn-sm" data-dismiss="modal">Close</button>

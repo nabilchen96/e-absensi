@@ -7,6 +7,7 @@ $("#btnCari").click(function () {
 });
 
 var table = null;
+const role = window.APP_DATA.role
 
 function getData() {
     table = $("#myTable").DataTable({
@@ -43,6 +44,11 @@ function getData() {
             },
             {
                 render: function (data, type, row, meta) {
+                    return `<b class="d-md-none">Status: </b><br class="d-md-none">${row.status}`;
+                }
+            },
+            {
+                render: function (data, type, row, meta) {
                     return `<b class="d-md-none">Keterangan: </b><br class="d-md-none">${row.keterangan ?? '-'}`;
                 }
             },
@@ -58,22 +64,82 @@ function getData() {
             },
             {
                 render: function (data, type, row, meta) {
-                    return `
-                    <div class="dropdown">
-                        <a class="text-success" href="#" data-toggle="dropdown">
-                            <i class="bi bi-three-dots" style="font-size:1.5rem"></i>
-                        </a>
-                        <div class="dropdown-menu">
-                            <a class="dropdown-item text-success" data-toggle="modal" data-target="#modal"
-                                href="javascript:void(0)" data-bs-id="${row.id}">
-                                <i class="bi bi-grid"></i> Edit
-                            </a>
-                            <a href="javascript:void(0)" class="dropdown-item text-danger" onclick="hapusData(${row.id})">
-                                <i class="bi bi-trash"></i> Hapus
-                            </a>
-                        </div>
-                    </div>
-                    `;
+
+
+                    if (role == 'OPD') {
+                        return `
+                            <div class="dropdown">
+                                <a class="text-success" href="#" data-toggle="dropdown">
+                                    <i class="bi bi-three-dots" style="font-size:1.5rem"></i>
+                                </a>
+                                <div class="dropdown-menu">
+                                    <a class="dropdown-item text-info" data-toggle="modal" data-target="#modalStatus"
+                                        href="javascript:void(0)" data-bs-id="${row.id}">
+                                        <i class="bi bi-grid"></i> Ubah Status
+                                    </a>
+                                    <a href="javascript:void(0)" class="dropdown-item text-danger" onclick="hapusData(${row.id})">
+                                        <i class="bi bi-trash"></i> Hapus
+                                    </a>
+                                </div>
+                            </div>
+                            `;
+                    }
+
+                    if (role == 'Pegawai') {
+
+                        if(row.status == 'Ditolak'){
+                            return `
+                            <div class="dropdown">
+                                <a class="text-success" href="#" data-toggle="dropdown">
+                                    <i class="bi bi-three-dots" style="font-size:1.5rem"></i>
+                                </a>
+                                <div class="dropdown-menu">
+                                    <a class="dropdown-item text-success" data-toggle="modal" data-target="#modal"
+                                        href="javascript:void(0)" data-bs-id="${row.id}">
+                                        <i class="bi bi-grid"></i> Edit
+                                    </a>
+                                    <a href="javascript:void(0)" class="dropdown-item text-danger" onclick="hapusData(${row.id})">
+                                        <i class="bi bi-trash"></i> Hapus
+                                    </a>
+                                </div>
+                            </div>
+                            `;
+                        }else{
+                            return `
+                            <div class="dropdown">
+                                <a class="text-success" href="#" data-toggle="dropdown">
+                                    <i class="bi bi-three-dots" style="font-size:1.5rem"></i>
+                                </a>
+                                <div class="dropdown-menu">
+                                    <a href="javascript:void(0)" class="dropdown-item text-danger" onclick="hapusData(${row.id})">
+                                        <i class="bi bi-trash"></i> Hapus
+                                    </a>
+                                </div>
+                            </div>
+                            `;
+                        }
+                    } else {
+                        return `
+                            <div class="dropdown">
+                                <a class="text-success" href="#" data-toggle="dropdown">
+                                    <i class="bi bi-three-dots" style="font-size:1.5rem"></i>
+                                </a>
+                                <div class="dropdown-menu">
+                                    <a class="dropdown-item text-success" data-toggle="modal" data-target="#modal"
+                                        href="javascript:void(0)" data-bs-id="${row.id}">
+                                        <i class="bi bi-grid"></i> Edit
+                                    </a>
+                                    <a class="dropdown-item text-info" data-toggle="modal" data-target="#modalStatus"
+                                        href="javascript:void(0)" data-bs-id="${row.id}">
+                                        <i class="bi bi-grid"></i> Ubah Status
+                                    </a>
+                                    <a href="javascript:void(0)" class="dropdown-item text-danger" onclick="hapusData(${row.id})">
+                                        <i class="bi bi-trash"></i> Hapus
+                                    </a>
+                                </div>
+                            </div>
+                            `;
+                    }
                 }
             }
         ],
@@ -119,6 +185,31 @@ $('#modal').on('show.bs.modal', function (event) {
     }
 });
 
+// =========================
+// SHOW MODAL
+// =========================
+$('#modalStatus').on('show.bs.modal', function (event) {
+
+    var button = $(event.relatedTarget);
+    var recipient = button.data('bs-id');
+    var cok = $("#myTable").DataTable().rows().data().toArray();
+
+    let cokData = cok.filter((dt) => {
+        return dt.id == recipient;
+    });
+
+    document.getElementById("form").reset();
+    document.getElementById('id').value = '';
+
+    if (recipient) {
+        // console.log(cokData[0].id, cokData[0].status);
+        
+        var modal = $(this);
+        modal.find('#id').val(cokData[0].id);
+        modal.find('#status').val(cokData[0].status);
+    }
+});
+
 
 // =========================
 // FORM SUBMIT (AJAX)
@@ -150,6 +241,47 @@ form.onsubmit = function (e) {
                 });
 
                 $("#modal").modal("hide");
+                table.destroy();
+                getData();
+            } else {
+                let err = "";
+                Object.entries(res.data.respon).forEach(([field, msg]) => {
+                    msg.forEach(m => err += `<li>${m}</li>`);
+                });
+                $("#respon_error").html(err);
+            }
+        })
+        .catch(err => {
+            $("#tombol_kirim").prop("disabled", false);
+            console.error(err);
+        });
+}
+
+formStatus.onsubmit = function (e) {
+    e.preventDefault();
+
+    let formData = new FormData(formStatus);
+
+    $("#respon_error").html("");
+    $("#tombol_kirim").prop("disabled", true);
+
+    axios.post(
+        "/update-status-perizinan",
+        formData
+    )
+        .then(res => {
+            $("#tombol_kirim").prop("disabled", false);
+
+            if (res.data.responCode == 1) {
+                Swal.fire({
+                    icon: "success",
+                    title: "Sukses",
+                    text: res.data.respon,
+                    showConfirmButton: false,
+                    timer: 2000
+                });
+
+                $("#modalStatus").modal("hide");
                 table.destroy();
                 getData();
             } else {

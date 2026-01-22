@@ -15,6 +15,8 @@ class Perizinan extends Model
         'jenis',
         'keterangan',
         'file',
+        'status',
+        'id_pengajuan'
     ];
 
     public function user()
