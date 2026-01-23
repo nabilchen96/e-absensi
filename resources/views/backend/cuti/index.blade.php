@@ -258,6 +258,13 @@
                             <div id="previewFile" class="mt-2"></div>
                         </div>
 
+                        <div class="form-group" id="ubahSemuaWrapper" style="display:none;">
+                            <label>Ubah Semua <sup class="text-danger">*</sup></label><br>
+                            <input type="checkbox" name="ubah_semua" value="1">
+                            Centang pilihan ini jika anda ingin merubah semua status dalam satu pengajuan yang sama
+                        </div>
+
+
                     </div>
 
                     <div class="modal-footer p-3">

@@ -37,7 +37,8 @@ class PerizinanController extends Controller
         if ($keyword) {
             $query->where(function ($q) use ($keyword) {
                 $q->where('users.name', 'like', "%$keyword%")
-                  ->orWhere('jenis', 'like', "%$keyword%");
+                  ->orWhere('jenis', 'like', "%$keyword%")
+                  ->orWhere('status', 'like', "%$keyword%");
             });
         }
 
@@ -142,13 +143,37 @@ class PerizinanController extends Controller
             $fileName = $request->file('file')->store('perizinan', 'public');
         }
 
-        $izin->update([
-            'user_id' => $request->user_id,
-            'tanggal' => $request->tanggal,
-            'jenis' => $request->jenis,
-            'keterangan' => $request->keterangan,
-            'file' => $fileName,
-        ]);
+        // Jika checkbox "ubah semua" dicentang
+        if ($request->has('ubah_semua')) {
+
+            // Ambil semua data dalam satu pengajuan
+            $perizinans = Perizinan::where('id_pengajuan', $izin->id_pengajuan)
+                ->orderBy('tanggal')
+                ->get();
+
+                foreach ($perizinans as $row) {
+
+                    $row->update([
+                        'user_id'    => $request->user_id,
+                        'tanggal'    => $row->tanggal,
+                        'jenis'      => $request->jenis,
+                        'keterangan' => $request->keterangan,
+                        'file'       => $fileName,
+                        'status'     => 'Pengajuan Ulang',
+                    ]);
+            }
+
+        } else {
+            // Update satu data saja
+            $izin->update([
+                'user_id' => $request->user_id,
+                'tanggal' => $request->tanggal,
+                'jenis' => $request->jenis,
+                'keterangan' => $request->keterangan,
+                'file' => $fileName,
+                'status' => 'Pengajuan Ulang'
+            ]);
+        }
 
         return response()->json([
             'responCode' => 1,

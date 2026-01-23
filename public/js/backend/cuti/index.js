@@ -170,9 +170,19 @@ $('#modal').on('show.bs.modal', function (event) {
 
         modal.find('#id').val(cokData[0].id);
         modal.find('#user_id').val(cokData[0].user_id);
-        modal.find('#tanggal').val(cokData[0].tanggal);
+        modal.find('#tanggal_awal').val(cokData[0].tanggal);
+        modal.find('#tanggal_akhir').val(cokData[0].tanggal);
         modal.find('#jenis').val(cokData[0].jenis);
         modal.find('#keterangan').val(cokData[0].keterangan);
+
+        // Sembunyikan & reset dulu
+        $('#ubahSemuaWrapper').hide();
+        $('input[name="ubah_semua"]').prop('checked', false);
+
+        if (cokData[0].status === 'Ditolak') {
+            $('#ubahSemuaWrapper').show();
+        }
+
 
         if (cokData[0].file) {
             $("#previewFile").html(`

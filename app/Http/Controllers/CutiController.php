@@ -9,6 +9,8 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Auth;
 use Illuminate\Support\Str;
+use Carbon\Carbon;
+use Carbon\CarbonPeriod;
 
 class CutiController extends Controller
 {
@@ -42,7 +44,8 @@ class CutiController extends Controller
         if ($keyword) {
             $query->where(function ($q) use ($keyword) {
                 $q->where('users.name', 'like', "%$keyword%")
-                  ->orWhere('jenis', 'like', "%$keyword%");
+                  ->orWhere('jenis', 'like', "%$keyword%")
+                  ->orWhere('status', 'like', "%$keyword%");
             });
         }
 
@@ -125,9 +128,12 @@ class CutiController extends Controller
         $validator = Validator::make($request->all(), [
             'id' => 'required',
             'user_id' => 'required',
-            'tanggal' => 'required|date',
+            'tanggal_awal' => 'required|date',
+            'tanggal_akhir' => 'required|date',
             'file' => 'nullable|file|mimes:pdf|max:2048'
         ]);
+
+        // dd($request->all());
 
         if ($validator->fails()) {
             return response()->json([
@@ -149,14 +155,37 @@ class CutiController extends Controller
             $fileName = $request->file('file')->store('perizinan', 'public');
         }
 
-        $izin->update([
-            'user_id' => $request->user_id,
-            'tanggal' => $request->tanggal,
-            'jenis' => $request->jenis,
-            'keterangan' => $request->keterangan,
-            'file' => $fileName,
-            'status' => $request->status
-        ]);
+        // Jika checkbox "ubah semua" dicentang
+        if ($request->has('ubah_semua')) {
+
+            // Ambil semua data dalam satu pengajuan
+            $perizinans = Perizinan::where('id_pengajuan', $izin->id_pengajuan)
+                ->orderBy('tanggal')
+                ->get();
+
+                foreach ($perizinans as $row) {
+
+                    $row->update([
+                        'user_id'    => $request->user_id,
+                        'tanggal'    => $row->tanggal,
+                        'jenis'      => $request->jenis,
+                        'keterangan' => $request->keterangan,
+                        'file'       => $fileName,
+                        'status'     => 'Pengajuan Ulang',
+                    ]);
+            }
+
+        } else {
+            // Update satu data saja
+            $izin->update([
+                'user_id' => $request->user_id,
+                'tanggal' => $request->tanggal,
+                'jenis' => $request->jenis,
+                'keterangan' => $request->keterangan,
+                'file' => $fileName,
+                'status' => 'Pengajuan Ulang'
+            ]);
+        }
 
         return response()->json([
             'responCode' => 1,

@@ -96,6 +96,7 @@ Route::group(['middleware' => 'auth'], function () {
     Route::get('/perizinan', 'App\Http\Controllers\PerizinanController@index');
     Route::get('/data-perizinan', 'App\Http\Controllers\PerizinanController@data');
     Route::post('/store-perizinan', 'App\Http\Controllers\PerizinanController@store');
+    Route::post('/update-perizinan', 'App\Http\Controllers\PerizinanController@update');
     Route::post('/delete-perizinan', 'App\Http\Controllers\PerizinanController@delete');
     Route::post('/update-status-perizinan', 'App\Http\Controllers\PerizinanController@updateStatus');
 
@@ -103,6 +104,7 @@ Route::group(['middleware' => 'auth'], function () {
     Route::get('/cuti', 'App\Http\Controllers\CutiController@index');
     Route::get('/data-cuti', 'App\Http\Controllers\CutiController@data');
     Route::post('/store-cuti', 'App\Http\Controllers\CutiController@store');
+    Route::post('/update-cuti', 'App\Http\Controllers\CutiController@update');
     Route::post('/delete-cuti', 'App\Http\Controllers\CutiController@delete');
     Route::post('/update-status-cuti', 'App\Http\Controllers\CutiController@updateStatus');
 
