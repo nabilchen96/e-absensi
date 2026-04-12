@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
@@ -10,20 +10,9 @@ use DB;
 
 class PengumumanController extends Controller
 {
-    public function index()
-    {
-        return view('backend.pengumuman.index');
-    }
-
     public function data(Request $request)
     {
-        $keyword = $request->keyword;
-
-        $query = DB::table('pengumumen');
-
-        if ($keyword) {
-            $query->where('pengumuman', 'like', "%$keyword%");
-        }
+        $query = DB::table('pengumumen')->orderBy('created_at', 'DESC');
 
         return response()->json(['data' => $query->get()]);
     }
@@ -55,7 +44,7 @@ class PengumumanController extends Controller
 
         return response()->json([
             'responCode' => 1,
-            'respon' => 'Shift berhasil disimpan'
+            'respon' => 'Pengumuman berhasil disimpan'
         ]);
     }
 
@@ -88,17 +77,27 @@ class PengumumanController extends Controller
 
         return response()->json([
             'responCode' => 1,
-            'respon' => 'Shift berhasil diperbarui'
+            'respon' => 'Pengumuman berhasil diperbarui'
         ]);
     }
 
     public function delete(Request $request)
     {
-        Pengumuman::find($request->id)->delete();
+        $data = Pengumuman::find($request->id);
+
+        if (!$data) {
+            return response()->json([
+                'responCode' => 1,
+                'respon' => 'Data pengumuman tidak ditemukan',
+            ]);
+        }
+
+        // Hapus data
+        $data->delete();
 
         return response()->json([
             'responCode' => 1,
-            'respon' => 'Shift berhasil dihapus'
+            'respon' => 'Pengumuman berhasil dihapus'
         ]);
     }
 }

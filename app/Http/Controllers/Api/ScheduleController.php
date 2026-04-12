@@ -7,13 +7,14 @@ use Illuminate\Http\Request;
 use DB;
 use Illuminate\Support\Facades\Validator;
 use App\Models\Schedule;
+use Auth;
 
 class ScheduleController extends Controller
 {
     public function index(Request $request)
     {
         $keyword        = $request->keyword;
-        $idUser         = $request->id_user;
+        $idUser         = $request->id_pandu;
         $tanggalDari    = $request->tanggal_dari;
         $tanggalSampai  = $request->tanggal_sampai;
 
@@ -37,14 +38,6 @@ class ScheduleController extends Controller
             $query->where('users.id_pandu', $idUser);
         }
 
-        // Filter Keyword
-        if (!empty($keyword)) {
-            $query->where(function ($q) use ($keyword) {
-                $q->where('users.name', 'like', "%$keyword%")
-                ->orWhere('shifts.nama_shift', 'like', "%$keyword%");
-            });
-        }
-
         // Filter tanggal dari
         if (!empty($tanggalDari)) {
             $query->whereDate('tanggal', '>=', $tanggalDari);
@@ -61,9 +54,33 @@ class ScheduleController extends Controller
             $query->whereDate('tanggal', '>=', date('Y-m-d'));
         }
 
-        // 🌟 PENGURUTAN / GROUPING: Nama lalu Tanggal
-        $query->orderBy('users.name', 'asc')
-            ->orderBy('tanggal', 'asc');
+        // 👑 ADMIN → semua data
+        if (Auth::user()->role == 'Admin') {
+
+            $data = $query->select('a.*', 'u.name')->get();
+
+        }
+        // 🏢 OPD → pegawai satu unit kerja
+        elseif (Auth::user()->role == 'OPD') {
+
+            $idUnitKerja = Auth::user()->id_unit_kerja_pandu;
+
+            $data = $query
+                ->join('lokasi_kerja_users as lku', 'lku.id_user', '=', 'u.id')
+                ->join('lokasi_kerjas as lk', 'lk.id', '=', 'lku.id_lokasi_kerja')
+                ->where('lk.id_pandu', $idUnitKerja)
+                // ->select('a.*', 'u.name', 'lk.lokasi_kerja')
+                ->get();
+
+        }
+        // 👤 PEGAWAI → data sendiri
+        else {
+
+            $data = $query
+                ->where('users.id', Auth::id())
+                // ->select('a.*', 'u.name')
+                ->get();
+        }
 
         return response()->json($query->get());
     }

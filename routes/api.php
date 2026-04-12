@@ -23,6 +23,14 @@ Route::post('/login', 'App\Http\Controllers\Api\AuthController@login');
 
 Route::middleware('auth:sanctum')->group(function () {
     
+
+    //USER
+    Route::get('/data-user', 'App\Http\Controllers\Api\UserController@index');
+
+    //PROFILE
+    Route::get('/data-profile', 'App\Http\Controllers\Api\ProfileController@index');
+    Route::get('/data-my-profile', 'App\Http\Controllers\Api\ProfileController@myProfile');
+
     //SHIFT
     Route::get('/data-shift', 'App\Http\Controllers\Api\ShiftController@index');
     
@@ -32,6 +40,38 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/update-schedule', 'App\Http\Controllers\Api\ScheduleController@update');
     Route::post('/delete-schedule', 'App\Http\Controllers\Api\ScheduleController@delete');
 
-    
-    Route::post('/logout', 'App\Http\Controllers\Api\AuthController@logout');
+    //PERIZINAN
+    Route::get('/data-perizinan', 'App\Http\Controllers\Api\PerizinanController@index');
+    Route::post('/store-perizinan', 'App\Http\Controllers\Api\PerizinanController@store');
+    Route::post('/delete-perizinan', 'App\Http\Controllers\Api\PerizinanController@delete');
+    Route::post('/update-perizinan', 'App\Http\Controllers\Api\PerizinanController@update');
+    Route::post('/update-status-perizinan', 'App\Http\Controllers\Api\PerizinanController@updateStatus');
+
+    //CUTI
+    Route::get('/data-cuti', 'App\Http\Controllers\Api\CutiController@index');
+    Route::post('/store-cuti', 'App\Http\Controllers\Api\CutiController@store');
+    Route::post('/delete-cuti', 'App\Http\Controllers\Api\CutiController@delete');
+    Route::post('/update-cuti', 'App\Http\Controllers\Api\CutiController@update');
+    Route::post('/update-status-cuti', 'App\Http\Controllers\Api\CutiController@updateStatus');
+
+    // PENGUMUMAN
+    Route::get('/pengumuman', 'App\Http\Controllers\Api\PengumumanController@index');
+    Route::get('/data-pengumuman', 'App\Http\Controllers\Api\PengumumanController@data');
+    Route::post('/store-pengumuman', 'App\Http\Controllers\Api\PengumumanController@store');
+    Route::post('/update-pengumuman', 'App\Http\Controllers\Api\PengumumanController@update');
+    Route::post('/delete-pengumuman', 'App\Http\Controllers\Api\PengumumanController@delete');
+
+    // ABSENSI
+    Route::get('/data-absensi', 'App\Http\Controllers\Api\AbsensiController@index');
+    Route::post('/store-absensi', 'App\Http\Controllers\Api\AbsensiController@store');
+
+    //LAPORAN ABSENSI
+    Route::get('/data-laporan', 'App\Http\Controllers\Api\LaporanController@index');
+
+    //LOKASI KEERJA USER
+    Route::get('/data-lokasi-kerja-user', 'App\Http\Controllers\Api\LokasiKerjaUserController@index');
+
 });
+
+Route::post('/logout', 'App\Http\Controllers\Api\AuthController@logout');
+Route::post('/logout-all', 'App\Http\Controllers\Api\AuthController@logoutAll')->middleware('auth:sanctum');
