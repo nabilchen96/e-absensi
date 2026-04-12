@@ -46,7 +46,7 @@ class PerizinanController extends Controller
 
         // Filter Nama User
         if (!empty($idUser)) {
-            $query->where('users.id', $idUser);
+            $query->where('users.id_pandu', $idUser);
         }
 
         // Filter tanggal dari
