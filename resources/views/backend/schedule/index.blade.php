@@ -15,12 +15,10 @@
             <div class="card w-100">
                 <div class="card-body">
 
-                    @if (Auth::user()->role == 'Admin')
-                        <button type="button" class="btn btn-primary btn-ms mb-4 d-none d-md-inline-block"
-                            data-toggle="modal" data-target="#modal">
-                            Tambah
-                        </button>
-                    @endif
+                    <button type="button" class="btn btn-primary btn-ms mb-4 d-none d-md-inline-block" data-toggle="modal"
+                        data-target="#modal">
+                        Tambah
+                    </button>
 
                     <button type="button" class="btn btn-info btn-sm mb-4" data-toggle="modal" data-target="#modalCari">
                         <i class="bi bi-search"></i> Cari
@@ -33,12 +31,10 @@
                         <a href="#" id="btnResetFilter"> | <i class="bi bi-arrow-repeat"></i> Reset</a>
                     </div>
 
-                    @if(Auth::user()->role == 'Admin')
-
+                    @if (Auth::user()->role == 'Admin')
                         <button type="button" class="fab-add d-md-none" data-toggle="modal" data-target="#modal">
                             <i class="bi bi-plus-lg"></i>
                         </button>
-
                     @endif
                     <div class="table-responsive">
                         <table id="myTable" class="table table-striped" style="width: 100%;">
@@ -49,6 +45,7 @@
                                     <th>User</th>
                                     <th>Shift</th>
                                     <th>Jam Masuk - Pulang</th>
+                                    <th>Status</th>
                                     <th>Aksi</th>
                                 </tr>
                             </thead>
@@ -83,9 +80,35 @@
                                 <option value="">-- Pilih User --</option>
                                 @php
                                     $users = DB::table('users');
-                                    if(Auth::user()->role == 'Admin'){
+                                    if (Auth::user()->role == 'Admin') {
                                         $users = $users->get();
-                                    }else{
+                                    }
+
+                                    // 🏢 ROLE OPD → pegawai dalam unit kerja yang sama
+                                    elseif (Auth::user()->role == 'OPD') {
+                                        $idUnitKerja = Auth::user()->id_unit_kerja_pandu; //107
+
+                                        $users = $users
+                                            ->leftjoin(
+                                                'lokasi_kerja_users',
+                                                'lokasi_kerja_users.id_user',
+                                                '=',
+                                                'users.id',
+                                            )
+                                            // ->leftjoin('lokasi_kerja_users', 'lokasi_kerja_users.id_lokasi_kerja', '=', 'lokasi_kerjas.id')
+                                            ->leftjoin(
+                                                'lokasi_kerjas',
+                                                'lokasi_kerjas.id',
+                                                '=',
+                                                'lokasi_kerja_users.id_lokasi_kerja',
+                                            )
+                                            ->select('users.*')
+                                            ->where('lokasi_kerjas.id_pandu', $idUnitKerja)
+                                            ->get();
+                                    }
+
+                                    // ROLE PEGAWAI
+                                    else {
                                         $users = $users->where('id', Auth::id())->get();
                                     }
                                 @endphp
@@ -119,6 +142,43 @@
                             <input type="date" name="tanggal_ke" id="tanggal_ke" class="form-control form-control-sm"
                                 required>
                         </div>
+                    </div>
+
+                    <div class="modal-footer p-3">
+                        <button type="button" class="btn btn-danger btn-sm" data-dismiss="modal">Close</button>
+                        <button id="tombol_kirim" class="btn btn-primary btn-sm">Submit</button>
+                    </div>
+
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="modalStatus" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <form id="formStatus">
+                    <div class="modal-header p-3">
+                        <h5 class="modal-title m-2">Form Schedule</h5>
+                    </div>
+
+                    <div class="modal-body">
+
+                        <input type="hidden" name="id" id="id">
+
+                        <ul id="respon_error" class="text-danger mb-4"></ul>
+
+                        <div class="form-group">
+                            <label>Status <sup class="text-danger">*</sup></label>
+                            <select class="form-control" name="status" id="status" required>
+                                <option value="">-- Pilih Status --</option>
+                                <option>Disetujui</option>
+                                <option>Ditolak</option>
+                                <option>Pengajuan</option>
+                            </select>
+                        </div>
+
+
                     </div>
 
                     <div class="modal-footer p-3">
@@ -168,5 +228,10 @@
 @endsection
 
 @push('script')
+    <script>
+        window.APP_DATA = {
+            role: @json(Auth::user()->role)
+        };
+    </script>
     <script src="{{ asset('js/backend/schedule/index.js') }}"></script>
 @endpush

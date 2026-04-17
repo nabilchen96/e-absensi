@@ -13,7 +13,6 @@ class ScheduleController extends Controller
 {
     public function index(Request $request)
     {
-        $keyword        = $request->keyword;
         $idUser         = $request->id_pandu;
         $tanggalDari    = $request->tanggal_dari;
         $tanggalSampai  = $request->tanggal_sampai;
@@ -30,59 +29,54 @@ class ScheduleController extends Controller
                 'shifts.jam_masuk',
                 'shifts.jam_pulang',
                 'tanggal',
-                'users.id_pandu'
+                'users.id_pandu',
+                'schedules.status'
             );
 
-        // Filter Nama User
         if (!empty($idUser)) {
             $query->where('users.id_pandu', $idUser);
         }
 
-        // Filter tanggal dari
         if (!empty($tanggalDari)) {
             $query->whereDate('tanggal', '>=', $tanggalDari);
         }
 
-        // Filter tanggal sampai
         if (!empty($tanggalSampai)) {
             $query->whereDate('tanggal', '<=', $tanggalSampai);
         }
 
-        // Default: sembunyikan tanggal yang sudah lewat (jika tidak ada filter)
-        $punyaFilter = $keyword || $idUser || $tanggalDari || $tanggalSampai;
+        $punyaFilter = $idUser || $tanggalDari || $tanggalSampai;
         if (!$punyaFilter) {
             $query->whereDate('tanggal', '>=', date('Y-m-d'));
         }
 
-        // 👑 ADMIN → semua data
+        // 👑 ADMIN
         if (Auth::user()->role == 'Admin') {
 
-            $data = $query->select('a.*', 'u.name')->get();
+            $data = $query->get();
 
         }
-        // 🏢 OPD → pegawai satu unit kerja
+        // 🏢 OPD
         elseif (Auth::user()->role == 'OPD') {
 
             $idUnitKerja = Auth::user()->id_unit_kerja_pandu;
 
             $data = $query
-                ->join('lokasi_kerja_users as lku', 'lku.id_user', '=', 'u.id')
+                ->join('lokasi_kerja_users as lku', 'lku.id_user', '=', 'users.id')
                 ->join('lokasi_kerjas as lk', 'lk.id', '=', 'lku.id_lokasi_kerja')
                 ->where('lk.id_pandu', $idUnitKerja)
-                // ->select('a.*', 'u.name', 'lk.lokasi_kerja')
                 ->get();
 
         }
-        // 👤 PEGAWAI → data sendiri
+        // 👤 PEGAWAI
         else {
 
             $data = $query
                 ->where('users.id', Auth::id())
-                // ->select('a.*', 'u.name')
                 ->get();
         }
 
-        return response()->json($query->get());
+        return response()->json($data);
     }
 
     public function store(Request $request)

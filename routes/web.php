@@ -75,6 +75,7 @@ Route::group(['middleware' => 'auth'], function () {
     Route::post('/store-schedule', 'App\Http\Controllers\ScheduleController@store');
     Route::post('/update-schedule', 'App\Http\Controllers\ScheduleController@update');
     Route::post('/delete-schedule', 'App\Http\Controllers\ScheduleController@delete');
+    Route::post('/update-status-schedule', 'App\Http\Controllers\ScheduleController@updateStatus');
     Route::get('/list-user', 'App\Http\Controllers\ScheduleController@listUser');
     Route::get('/list-shift', 'App\Http\Controllers\ScheduleController@listShift');
 
@@ -107,6 +108,13 @@ Route::group(['middleware' => 'auth'], function () {
     Route::post('/update-cuti', 'App\Http\Controllers\CutiController@update');
     Route::post('/delete-cuti', 'App\Http\Controllers\CutiController@delete');
     Route::post('/update-status-cuti', 'App\Http\Controllers\CutiController@updateStatus');
+
+    //LKH
+    Route::get('/lkh', 'App\Http\Controllers\LkhController@index');
+    Route::get('/data-lkh', 'App\Http\Controllers\LkhController@data');
+    Route::post('/store-lkh', 'App\Http\Controllers\LkhController@store');
+    Route::post('/update-lkh', 'App\Http\Controllers\LkhController@update');
+    Route::post('/delete-lkh', 'App\Http\Controllers\LkhController@delete');
 
     // LAPORAN SHIFT CONTROLLER
     Route::get('/laporan-shift', 'App\Http\Controllers\LaporanShiftController@index');

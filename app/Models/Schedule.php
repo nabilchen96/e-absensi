@@ -11,6 +11,7 @@ class Schedule extends Model
         'id_user',
         'id_shift',
         'tanggal',
+        'status'
     ];
 
     public function user()

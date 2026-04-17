@@ -97,7 +97,7 @@ class CutiController extends Controller
             $fileName = $request->file('file')->store('perizinan', 'public');
         }
 
-        $idPengajuan = 'CT-' . now()->format('YmdHis') . '-' . Str::upper(Str::random(5));
+        $idPengajuan = 'CT' . now()->format('YmdHis');
 
         // Looping tanggal
         $start = strtotime($request->tanggal_awal);

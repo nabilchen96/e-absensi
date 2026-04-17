@@ -98,7 +98,7 @@
                         <a class="nav-link" href="{{ url('cuti') }}">Cuti</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="#">LKH</a>
+                        <a class="nav-link" href="{{ url('lkh') }}">LKH</a>
                     </li>
                 </ul>
             </div>

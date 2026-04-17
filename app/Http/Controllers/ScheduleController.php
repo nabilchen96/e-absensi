@@ -9,6 +9,7 @@ use App\Models\User;
 use App\Models\Shift;
 use Illuminate\Support\Facades\Validator;
 use DB;
+use Auth;
 
 class ScheduleController extends Controller
 {
@@ -35,6 +36,7 @@ class ScheduleController extends Controller
                 'shifts.nama_shift as shift_name',
                 'shifts.jam_masuk',
                 'shifts.jam_pulang',
+                'schedules.status',
                 'tanggal'
             );
 
@@ -71,8 +73,27 @@ class ScheduleController extends Controller
         $query->orderBy('users.name', 'asc')
             ->orderBy('tanggal', 'asc');
 
+        if(Auth::user()->role == 'Admin'){
+            $query = $query->get();
+        }
+
+        // 🏢 ROLE OPD → pegawai dalam unit kerja yang sama
+        elseif(Auth::user()->role == 'OPD'){
+
+            $idUnitKerja = Auth::user()->id_unit_kerja_pandu; //107
+
+            $query = $query->leftjoin('lokasi_kerja_users', 'lokasi_kerja_users.id_user', '=', 'users.id')
+                    // ->leftjoin('lokasi_kerja_users', 'lokasi_kerja_users.id_lokasi_kerja', '=', 'lokasi_kerjas.id')
+                    ->leftjoin('lokasi_kerjas', 'lokasi_kerjas.id', '=', 'lokasi_kerja_users.id_lokasi_kerja')
+                    ->where('lokasi_kerjas.id_pandu', $idUnitKerja)->get();
+        }
+
+        else{
+            $query = $query->where('users.id', Auth::id())->get();
+        }
+
         return response()->json([
-            'data' => $query->get()
+            'data' => $query
         ]);
     }
 
@@ -101,6 +122,7 @@ class ScheduleController extends Controller
                 'id_user' => $request->id_user,
                 'id_shift' => $request->id_shift,
                 'tanggal' => date('Y-m-d', $start),
+                'status'  => 'Pengajuan'
             ]);
 
             // Tambah 1 hari
@@ -145,6 +167,34 @@ class ScheduleController extends Controller
         return response()->json([
             'responCode' => 1,
             'respon' => 'Schedule berhasil dihapus'
+        ]);
+    }
+
+    public function updateStatus(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'id' => 'required',
+            'status' => 'required',
+        ]);
+
+        // dd($request->all());
+
+        if ($validator->fails()) {
+            return response()->json([
+                'responCode' => 0,
+                'respon' => $validator->errors(),
+            ]);
+        }
+
+        // Ambil data perizinan berdasarkan ID
+        $jadwal = Schedule::findOrFail($request->id);
+        $jadwal->update([
+            'status' => $request->status
+        ]);
+
+        return response()->json([
+            'responCode' => 1,
+            'respon' => 'Status Jadwak berhasil diperbarui'
         ]);
     }
 

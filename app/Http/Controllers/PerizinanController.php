@@ -88,7 +88,7 @@ class PerizinanController extends Controller
             $fileName = $request->file('file')->store('perizinan', 'public');
         }
 
-        $idPengajuan = 'PZN-' . now()->format('YmdHis') . '-' . Str::upper(Str::random(5));
+        $idPengajuan = 'PZN' . now()->format('YmdHis');
 
         // Looping tanggal
         $start = strtotime($request->tanggal_awal);

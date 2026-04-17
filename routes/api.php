@@ -40,6 +40,12 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/update-schedule', 'App\Http\Controllers\Api\ScheduleController@update');
     Route::post('/delete-schedule', 'App\Http\Controllers\Api\ScheduleController@delete');
 
+    //LKH
+    Route::get('/data-lkh', 'App\Http\Controllers\Api\LkhController@index');
+    Route::post('/store-lkh', 'App\Http\Controllers\Api\LkhController@store');
+    Route::post('/update-lkh', 'App\Http\Controllers\Api\LkhController@update');
+    Route::post('/delete-lkh', 'App\Http\Controllers\Api\LkhController@delete');
+
     //PERIZINAN
     Route::get('/data-perizinan', 'App\Http\Controllers\Api\PerizinanController@index');
     Route::post('/store-perizinan', 'App\Http\Controllers\Api\PerizinanController@store');

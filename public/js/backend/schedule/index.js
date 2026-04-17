@@ -1,5 +1,6 @@
 var table = null;
 let id_user, id_shift, idUserSearch
+const role = window.APP_DATA.role
 
 document.addEventListener('DOMContentLoaded', function () {
     getData();
@@ -86,7 +87,23 @@ function getData() {
                 render: (data, type, row) => `<b class="d-md-none">Masuk - Pulang: </b><br class="d-md-none"> ${row.jam_masuk} → ${row.jam_pulang}`
             },
             {
+                render: (data, type, row) => `<b class="d-md-none">Status: </b><br class="d-md-none"> ${row.status}`
+            },
+            {
                 render: function (data, type, row) {
+
+                    let konfirmasiBtn = '';
+
+                    if (role !== 'Pegawai') {
+                        konfirmasiBtn = `
+                            <a class="dropdown-item text-info"
+                            data-toggle="modal" data-target="#modalStatus"
+                            href="javascript:void(0)" data-bs-id="${row.id}">
+                            <i class="bi bi-check-square"></i> Konfirmasi
+                            </a>
+                        `;
+                    }
+
                     return `
                     <div class="dropdown">
                         <a class="text-success" href="#" data-toggle="dropdown">
@@ -94,12 +111,15 @@ function getData() {
                         </a>
                         <div class="dropdown-menu">
                             <a class="dropdown-item text-success"
-                               data-toggle="modal" data-target="#modal"
-                               href="javascript:void(0)" data-bs-id="${row.id}">
-                               <i class="bi bi-grid"></i> Edit
+                            data-toggle="modal" data-target="#modal"
+                            href="javascript:void(0)" data-bs-id="${row.id}">
+                            <i class="bi bi-grid"></i> Edit
                             </a>
+
+                            ${konfirmasiBtn}
+
                             <a href="#" class="dropdown-item text-danger" onclick="hapusData(${row.id})">
-                               <i class="bi bi-trash"></i> Hapus
+                            <i class="bi bi-trash"></i> Hapus
                             </a>
                         </div>
                     </div>`;
@@ -129,6 +149,31 @@ $('#modal').on('show.bs.modal', function (event) {
         id_shift.setValue(cokData[0].id_shift);
         modal.find('#tanggal_dari').val(cokData[0].tanggal);
         modal.find('#tanggal_ke').val(cokData[0].tanggal);
+    }
+});
+
+// =========================
+// SHOW MODAL
+// =========================
+$('#modalStatus').on('show.bs.modal', function (event) {
+
+    var button = $(event.relatedTarget);
+    var recipient = button.data('bs-id');
+    var cok = $("#myTable").DataTable().rows().data().toArray();
+
+    let cokData = cok.filter((dt) => {
+        return dt.id == recipient;
+    });
+
+    document.getElementById("form").reset();
+    document.getElementById('id').value = '';
+
+    if (recipient) {
+        // console.log(cokData[0].id, cokData[0].status);
+
+        var modal = $(this);
+        modal.find('#id').val(cokData[0].id);
+        modal.find('#status').val(cokData[0].status);
     }
 });
 
@@ -182,6 +227,48 @@ form.onsubmit = (e) => {
             console.log(res);
         });
 };
+
+formStatus.onsubmit = function (e) {
+    e.preventDefault();
+
+    let formData = new FormData(formStatus);
+
+    $("#respon_error").html("");
+    $("#tombol_kirim").prop("disabled", true);
+
+    axios.post(
+        "/update-status-schedule",
+        formData
+    )
+        .then(res => {
+            $("#tombol_kirim").prop("disabled", false);
+
+            if (res.data.responCode == 1) {
+                Swal.fire({
+                    icon: "success",
+                    title: "Sukses",
+                    text: res.data.respon,
+                    showConfirmButton: false,
+                    timer: 2000
+                });
+
+                $("#modalStatus").modal("hide");
+                table.destroy();
+                getData();
+            } else {
+                let err = "";
+                Object.entries(res.data.respon).forEach(([field, msg]) => {
+                    msg.forEach(m => err += `<li>${m}</li>`);
+                });
+                $("#respon_error").html(err);
+            }
+        })
+        .catch(err => {
+            $("#tombol_kirim").prop("disabled", false);
+            console.error(err);
+        });
+}
+
 
 //DELETE DATA
 hapusData = (id) => {

@@ -154,7 +154,7 @@ class PerizinanController extends Controller
         }
     }
 
-        public function update(Request $request)
+    public function update(Request $request)
     {
         $validator = Validator::make($request->all(), [
             'tanggal_awal' => 'required|date',

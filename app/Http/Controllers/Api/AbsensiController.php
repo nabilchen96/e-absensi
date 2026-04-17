@@ -16,16 +16,29 @@ class AbsensiController extends Controller
 {
     public function index(Request $request)
     {
-        $keyword = $request->keyword;
 
+        $idUser         = $request->id_pandu;
+        $tanggalDari    = $request->tanggal_dari;
+        $tanggalSampai  = $request->tanggal_sampai;
+        
         $query = DB::table('absensis as a')
             ->join('users as u', 'u.id', '=', 'a.user_id')
             ->where('u.role', 'Pegawai')
             ->orderBy('a.id', 'DESC');
 
-        // 🔍 keyword
-        if ($keyword) {
-            $query->where('u.name', 'like', "%$keyword%");
+        // Filter Nama User
+        if (!empty($idUser)) {
+            $query->where('u.id_pandu', $idUser);
+        }
+
+        // Filter tanggal dari
+        if (!empty($tanggalDari)) {
+            $query->whereDate('a.created_at', '>=', $tanggalDari);
+        }
+
+        // Filter tanggal sampai
+        if (!empty($tanggalSampai)) {
+            $query->whereDate('a.created_at', '<=', $tanggalSampai);
         }
 
         // 👑 ADMIN → semua data
