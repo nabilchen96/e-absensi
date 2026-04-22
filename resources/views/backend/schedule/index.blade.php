@@ -79,7 +79,7 @@
                             <select name="id_user" id="id_user" class="" required>
                                 <option value="">-- Pilih User --</option>
                                 @php
-                                    $users = DB::table('users');
+                                    $users = DB::table('users')->where('role', 'Pegawai');
                                     if (Auth::user()->role == 'Admin') {
                                         $users = $users->get();
                                     }

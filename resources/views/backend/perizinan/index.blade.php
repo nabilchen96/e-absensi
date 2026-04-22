@@ -186,7 +186,7 @@
                             <select class="form-control" name="user_id" id="user_id" required>
                                 <option value="">-- Pilih User --</option>
                                 @php
-                                    $user = DB::table('users');
+                                    $user = DB::table('users')->where('role', 'Pegawai');
                                     if (Auth::user()->role == 'Admin') {
                                         $user = $user->get();
                                     }

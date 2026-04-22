@@ -128,6 +128,7 @@
                                 <tr>
                                     <th width="5%">No</th>
                                     <th>Uraian Kegiatan</th>
+                                    <th width="15%">Nama / NIP</th>
                                     <th width="10%">Tanggal</th>
                                     <th width="10%">Total Menit</th>
                                     <th width="5%"></th>
@@ -166,7 +167,7 @@
 
                         <div class="form-group">
                             <label>Total Menit<sup class="text-danger">*</sup></label>
-                            <input type="number" name="waktu" id="waktu" class="form-control" required>
+                            <input type="number" placeholder="Total menit" name="waktu" id="waktu" class="form-control" required>
                         </div>
 
                     </div>

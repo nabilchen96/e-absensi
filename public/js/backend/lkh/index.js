@@ -31,6 +31,11 @@ function getData() {
                     return `${row.uraian_kegiatan}`
                 }
             },
+             {
+                render: function (data, type, row, meta) {
+                    return `${row.user_name} <br> ${row.nip != null ? `NIP: ${row.nip}` : ``}`
+                }
+            },
             {
                 render: function (data, type, row, meta) {
                     return `${row.tanggal}`;
