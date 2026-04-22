@@ -22,19 +22,26 @@ class UserController extends Controller
         $keyword = $request->keyword;
 
         $query = DB::table('users')
-                    ->leftjoin('lokasi_kerjas', 'lokasi_kerjas.id_pandu', '=', 'users.id_unit_kerja_pandu')
-                    ->select(
-                        'users.*', 
-                        'lokasi_kerjas.lokasi_kerja'
-                    )
-                    ->whereNotIn('role', ['Pegawai']);
+            ->leftJoin('lokasi_kerjas', 'lokasi_kerjas.id_pandu', '=', 'users.id_unit_kerja_pandu')
+            ->leftJoin('users as skpd', function ($join) {
+                $join->on('skpd.id_skpd_pandu', '=', 'users.id_skpd_pandu')
+                    ->whereNull('skpd.id_unit_kerja_pandu') // hanya SKPD
+                    ->whereNotNull('users.id_unit_kerja_pandu') // hanya unit kerja
+                    ->where('users.id_skpd_pandu', '!=', ''); // jangan yang kosong
+            })
+            ->select(
+                'users.*',
+                'lokasi_kerjas.lokasi_kerja',
+                'skpd.name as nama_skpd'
+            )
+            ->whereNotIn('users.role', ['Pegawai']);
 
         // Jika keyword ada
         if ($keyword) {
             $query->where(function ($q) use ($keyword) {
-                $q->where('name', 'like', "%$keyword%")
-                ->orWhere('email', 'like', "%$keyword%")
-                ->orWhere('role', 'like', "%$keyword%");
+                $q->where('users.name', 'like', "%$keyword%")
+                ->orWhere('users.email', 'like', "%$keyword%")
+                ->orWhere('users.role', 'like', "%$keyword%");
             });
         }
 

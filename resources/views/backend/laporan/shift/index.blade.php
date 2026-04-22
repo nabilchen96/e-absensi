@@ -18,17 +18,67 @@
                     <button type="button" class="btn btn-info btn-sm mb-4" data-toggle="modal" data-target="#modalCari">
                         <i class="bi bi-search"></i> Cari
                     </button>
+                    <div class="row">
 
-                    {{-- informasi pencarian dan tombol reset form input #modalCari dan mereload ulang data  --}}
-                    {{-- informasi pencarian --}}
-                    {{-- <div id="infoFilter" class="d-none text-danger" style="font-size: 12px;">
-                        Pencarian Data: <span id="textFilter"></span>
-                        <a href="#" id="btnResetFilter"> | <i class="bi bi-arrow-repeat"></i> Reset</a>
-                    </div> --}}
+                        <div class="col-lg-3 mb-4">
+                            <div class="card bg-gradient-success card-img-holder text-white">
+                                <div class="card-body">
+                                    <img src="https://themewagon.github.io/purple-react/static/media/circle.953c9ca0.svg"
+                                        class="card-img-absolute" alt="circle">
+                                    <h4 class="font-weight-normal mb-3">
+                                        Total Durasi
+                                        <i class="bi bi-person-circle float-right"></i>
+                                    </h4>
+                                    <h2 id="totalJamKerja">00:00:00</h2>
+                                    <span>Jam Kerja</span>
+                                </div>
+                            </div>
+                        </div>
 
-                    <button type="button" class="fab-add d-md-none" data-toggle="modal" data-target="#modal">
-                        <i class="bi bi-plus-lg"></i>
-                    </button>
+                        <div class="col-lg-3 mb-4">
+                            <div class="card bg-gradient-primary card-img-holder text-white">
+                                <div class="card-body">
+                                    <img src="https://themewagon.github.io/purple-react/static/media/circle.953c9ca0.svg"
+                                        class="card-img-absolute" alt="circle">
+                                    <h4 class="font-weight-normal mb-3">
+                                        Total Durasi
+                                        <i class="bi bi-person-circle float-right"></i>
+                                    </h4>
+                                    <h2 id="totalTerlambat">00:00:00</h2>
+                                    <span>Terlambat</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-lg-3 mb-4">
+                            <div class="card bg-gradient-info card-img-holder text-white">
+                                <div class="card-body">
+                                    <img src="https://themewagon.github.io/purple-react/static/media/circle.953c9ca0.svg"
+                                        class="card-img-absolute" alt="circle">
+                                    <h4 class="font-weight-normal mb-3">
+                                        Total Absen
+                                        <i class="bi bi-person-circle float-right"></i>
+                                    </h4>
+                                    <h2 id="totalHadir">0</h2>
+                                    <span>Datang dan Pulang</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-3 mb-4">
+                            <div class="card bg-gradient-danger card-img-holder text-white">
+                                <div class="card-body">
+                                    <img src="https://themewagon.github.io/purple-react/static/media/circle.953c9ca0.svg"
+                                        class="card-img-absolute" alt="circle">
+                                    <h4 class="font-weight-normal mb-3">
+                                        Total Jadwal
+                                        <i class="bi bi-person-circle float-right"></i>
+                                    </h4>
+                                    <h2 id="totalShift">0</h2>
+                                    <span>Shift</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
 
 
                     <div class="table-responsive">
@@ -64,12 +114,15 @@
                     <div class="form-group">
                         <label>User</label>
                         <select id="idUserSearch" class="">
-                            <option value="">-- Semua User --</option>
                             @php
-                                $users = DB::table('users')->get();
+                                $users = DB::table('users')
+                                    ->leftjoin('detail_users', 'detail_users.user_id', '=', 'users.id')
+                                    ->select('users.*', 'detail_users.nip')
+                                    ->get();
                             @endphp
                             @foreach ($users as $user)
-                                <option value="{{ $user->id }}">{{ $user->name }}</option>
+                                <option value="{{ $user->id }}">{{ $user->name }} [ NIP: {{ @$user->nip }} ]
+                                </option>
                             @endforeach
                         </select>
                     </div>

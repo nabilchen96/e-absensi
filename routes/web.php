@@ -120,6 +120,12 @@ Route::group(['middleware' => 'auth'], function () {
     Route::get('/laporan-shift', 'App\Http\Controllers\LaporanShiftController@index');
     Route::get('/data-laporan-shift', 'App\Http\Controllers\LaporanShiftController@data');
 
+    // LAPORAN REKAP CONTROLLER
+    Route::get('/laporan-rekap', 'App\Http\Controllers\LaporanRekapController@index');
+    Route::get('/detail-laporan-rekap', 'App\Http\Controllers\LaporanRekapController@detail');
+    Route::get('/data-laporan-rekap', 'App\Http\Controllers\LaporanRekapController@data');
+    Route::post('/generate-laporan-rekap', 'App\Http\Controllers\LaporanRekapController@generate');
+
     //SINKRONISASI DATA USER
     Route::get('/sync-users', function () {
         SyncUsersJob::dispatch();

@@ -26,7 +26,11 @@ function getData() {
                     return meta.row + meta.settings._iDisplayStart + 1;
                 }
             },
-            { data: "name" },
+            {
+                render: function(data, type, row, meta){
+                    return `<b>${row.name}</b>${row.nama_skpd ? `<br>${row.nama_skpd}` : ``}`
+                }
+            },
             { data: "email" },
             { 
                 render: function (data, type, row, meta) {

@@ -112,11 +112,11 @@
             <div class="collapse" id="laporan">
                 <ul class="nav flex-column sub-menu">
                     <li class="nav-item">
-                        <a class="nav-link" href="{{ url('laporan-shift') }}">Laporan Shift</a>
+                        <a class="nav-link" href="{{ url('laporan-shift') }}">Lap. Shift</a>
                     </li>
-                    {{-- <li class="nav-item">
-                        <a class="nav-link" href="#">Laporan Rekap</a>
-                    </li> --}}
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url('laporan-rekap') }}">Lap. Rekap</a>
+                    </li>
                 </ul>
             </div>
         </li>

@@ -60,6 +60,22 @@ class PegawaiController extends Controller
                     ->where('lokasi_kerjas.id_pandu', $idUnitKerja)->get();
         }
 
+        elseif (Auth::user()->role == 'SKPD') {
+
+            $idSkpd = Auth::user()->id_skpd_pandu;
+
+            $user = $query
+                ->leftJoin('lokasi_kerja_users', 'lokasi_kerja_users.id_user', '=', 'users.id')
+                ->leftJoin('lokasi_kerjas', 'lokasi_kerjas.id', '=', 'lokasi_kerja_users.id_lokasi_kerja')
+                ->whereIn('lokasi_kerjas.id_pandu', function ($sub) use ($idSkpd) {
+                    $sub->select('id_unit_kerja_pandu')
+                        ->from('users')
+                        ->where('id_skpd_pandu', $idSkpd)
+                        ->whereNotNull('id_unit_kerja_pandu');
+                })
+                ->get();
+        }
+
         
         // ROLE UNTUK ADMIN
         else{

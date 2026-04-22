@@ -56,6 +56,21 @@ function getData() {
         lengthChange: false,
         ajax: {
             url: '/data-laporan-shift',
+            dataSrc: function (json) {
+
+                // fallback biar gak error
+                if (!json.summary) {
+                    console.error("Summary tidak ada:", json);
+                    return json.data ?? json;
+                }
+
+                $("#totalJamKerja").text(json.summary.total_jam_kerja || "00:00:00");
+                $("#totalTerlambat").text(json.summary.total_terlambat || "00:00:00");
+                $("#totalHadir").text(json.summary.total_hadir || 0);
+                $("#totalShift").text(json.summary.total_shift || 0);
+
+                return json.data;
+            },
             data: function (d) {
                 d.id_user = $("#idUserSearch").val();
                 d.start_date = $("#tanggalDari").val();
@@ -76,11 +91,6 @@ function getData() {
 
         },
         columns: [
-            // {
-            //     render: function (data, type, row, meta) {
-            //         return meta.row + meta.settings._iDisplayStart + 1;
-            //     }
-            // },
             {
                 render: (data, type, row) => `
                     <b class="d-md-none">Tanggal: </b>
