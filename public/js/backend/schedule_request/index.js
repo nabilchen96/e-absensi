@@ -1,12 +1,10 @@
 var table = null;
 let id_user, id_shift, idUserSearch
 const role = window.APP_DATA.role
-const params = new URLSearchParams(window.location.search);
 
 document.addEventListener('DOMContentLoaded', function () {
     getData();
-    // id_user = new TomSelect('#id_user');
-    id_shift = new TomSelect('#id_shift');
+    id_user = new TomSelect('#id_user');
     idUserSearch = new TomSelect('#idUserSearch');
 
 });
@@ -55,20 +53,16 @@ $("#btnResetFilter").click(function () {
 
 //LOAD DATA
 function getData() {
-    // const id = params.get('id');
-
     table = $("#myTable").DataTable({
         ordering: true,
         processing: true,
         searching: false,
         lengthChange: false,
         ajax: {
-            url: `/data-schedule?id=${params.get('id')}`,
+            url: '/data-schedule-request',
             data: function (d) {
                 d.keyword = $("#searchInput").val();
                 d.id_user = $("#idUserSearch").val();
-                // d.tanggal_dari = $("#tanggalDari").val();
-                // d.tanggal_sampai = $("#tanggalSampai").val();
             }
         },
         columns: [
@@ -78,20 +72,30 @@ function getData() {
                 }
             },
             {
-                render: (data, type, row) => `<b class="d-md-none">Tanggal: </b><br class="d-md-none"> ${row.tanggal}`
+                render: (data, type, row) => `<b class="d-md-none">Pegawai: </b><br class="d-md-none"> ${row.name}`
             },
             {
-                render: (data, type, row) => `<b class="d-md-none">Pegawai: </b><br class="d-md-none"> ${row.user_name}`
+                render: (data, type, row) => `<b class="d-md-none">Tgl Jadwal: </b><br class="d-md-none"> ${row.tanggal_awal} → ${row.tanggal_akhir}`
             },
             {
-                render: (data, type, row) => `<b class="d-md-none">Shift: </b><br class="d-md-none"> ${row.shift_name}`
+                render: (data, type, row) => `<b class="d-md-none">Status: </b><br class="d-md-none"> ${row.status}`
             },
             {
-                render: (data, type, row) => `<b class="d-md-none">Masuk - Pulang: </b><br class="d-md-none"> ${row.jam_masuk} → ${row.jam_pulang}`
+                render: (data, type, row) => `<b class="d-md-none">Tgl Pengajuan: </b><br class="d-md-none"> ${row.created_at}`
             },
-            // {
-            //     render: (data, type, row) => `<b class="d-md-none">Status: </b><br class="d-md-none"> ${row.status}`
-            // },
+            {
+                render: function (data, type, row, meta) {
+                    if (!row.file) return `<span class="text-muted">Tidak ada</span>`;
+                    return `
+                        <a href="/storage/${row.file}" target="_blank" class="text-primary">
+                            <i class="bi bi-file-earmark-text"></i> Lihat
+                        </a>
+                    `;
+                },
+            },
+             {
+                render: (data, type, row) => `<b class="d-md-none">Status: </b><br class="d-md-none"> ${row.catatan ?? '-'}`
+            },
             {
                 render: function (data, type, row) {
 
@@ -102,7 +106,7 @@ function getData() {
                             <a class="dropdown-item text-info"
                             data-toggle="modal" data-target="#modalStatus"
                             href="javascript:void(0)" data-bs-id="${row.id}">
-                            <i class="bi bi-check-square"></i> Konfirmasi
+                            <i class="bi bi-check-square"></i> Ubah Status
                             </a>
                         `;
                     }
@@ -113,14 +117,21 @@ function getData() {
                             <i class="bi bi-three-dots" style="font-size:1.5rem"></i>
                         </a>
                         <div class="dropdown-menu">
-                            
+                            <a href="/schedule?id=${row.id}" class="dropdown-item text-warning"
+                                href="javascript:void(0)" data-bs-id="${row.id}">
+                                <i class="bi bi-eye"></i> Detail
+                            </a>
 
-                            
+                             <a class="dropdown-item text-success" data-toggle="modal" data-target="#modal" 
+                                href="javascript:void(0)" data-bs-id="${row.id}">
+                                <i class="bi bi-grid"></i> Edit
+                            </a>
 
-                            ${row.status == `Pengajuan` || row.status == 'Diterima' ? `` 
-                            : `<a href="#" class="dropdown-item text-danger" onclick="hapusData(${row.id})">
-                                <i class="bi bi-trash"></i> Hapus
-                            </a>` }
+                            ${konfirmasiBtn}
+
+                            <a href="#" class="dropdown-item text-danger" onclick="hapusData(${row.id})">
+                            <i class="bi bi-trash"></i> Hapus
+                            </a>
                         </div>
                     </div>`;
                 }
@@ -139,16 +150,12 @@ $('#modal').on('show.bs.modal', function (event) {
 
     document.getElementById("form").reset();
     document.getElementById('id').value = '';
-    // id_user.setValue('');
-    id_shift.setValue('');
+    id_user.setValue('');
 
     if (recipient) {
         var modal = $(this);
         modal.find('#id').val(cokData[0].id);
-        // id_user.setValue(cokData[0].id_user);
-        id_shift.setValue(cokData[0].id_shift);
-        modal.find('#tanggal_dari').val(cokData[0].tanggal);
-        modal.find('#tanggal_ke').val(cokData[0].tanggal);
+        id_user.setValue(cokData[0].id_user);
     }
 });
 
@@ -174,6 +181,7 @@ $('#modalStatus').on('show.bs.modal', function (event) {
         var modal = $(this);
         modal.find('#id').val(cokData[0].id);
         modal.find('#status').val(cokData[0].status);
+        // modal.find('#catatan').val(cokData[0].catatan);
     }
 });
 
@@ -190,7 +198,7 @@ form.onsubmit = (e) => {
 
     axios({
         method: 'post',
-        url: formData.get('id') == '' ? '/store-schedule' : '/update-schedule',
+        url: formData.get('id') == '' ? '/store-schedule-request' : '/update-schedule-request',
         data: formData,
     })
         .then(function (res) {
@@ -200,14 +208,16 @@ form.onsubmit = (e) => {
                 Swal.fire({
                     icon: 'success',
                     title: 'Sukses',
-                    text: res.data.respon,
-                    timer: 3000,
-                    showConfirmButton: false
+                    text: res.data.respon + '. Anda akan diarahkan ke halaman input data jadwal',
+                    confirmButtonText: 'OK'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+
+                        window.location.href = `/schedule?id=${res.data.data.id}`;
+                    }
                 });
 
-                $("#modal").modal("hide");
-                $('#myTable').DataTable().clear().destroy();
-                getData();
+
 
             } else {
                 let respon_error = ``;
@@ -237,7 +247,7 @@ formStatus.onsubmit = function (e) {
     $("#tombol_kirim").prop("disabled", true);
 
     axios.post(
-        "/update-status-schedule",
+        "/update-status-schedule-request",
         formData
     )
         .then(res => {
@@ -283,7 +293,7 @@ hapusData = (id) => {
     }).then((result) => {
 
         if (result.value) {
-            axios.post('/delete-schedule', { id })
+            axios.post('/delete-schedule-request', { id })
                 .then((response) => {
 
                     if (response.data.responCode == 1) {

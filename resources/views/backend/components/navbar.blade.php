@@ -54,7 +54,7 @@
                             <a class="nav-link" href="{{ url('shift') }}">Shift</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="{{ url('schedule') }}">Schedule</a>
+                            <a class="nav-link" href="{{ url('schedule-request') }}">Schedule</a>
                         </li>
                         @if (Auth::user()->role == 'Admin')
                             <li class="nav-item">
@@ -73,8 +73,14 @@
                 </a>
 
             </li>
-            <li class="nav-item">
+            {{-- <li class="nav-item">
                 <a class="nav-link" href="{{ url('schedule') }}">
+                    <i class="icon-grid bi bi-calendar-plus menu-icon"></i>
+                    <span class="menu-title">Schedule</span>
+                </a>
+            </li> --}}
+            <li class="nav-item">
+                <a class="nav-link" href="{{ url('schedule-request') }}">
                     <i class="icon-grid bi bi-calendar-plus menu-icon"></i>
                     <span class="menu-title">Schedule</span>
                 </a>

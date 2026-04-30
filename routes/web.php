@@ -69,6 +69,14 @@ Route::group(['middleware' => 'auth'], function () {
     Route::post('/update-lokasi-kerja', 'App\Http\Controllers\LokasiKerjaController@update');
     Route::post('/delete-lokasi-kerja', 'App\Http\Controllers\LokasiKerjaController@delete');
 
+    // SHCEDULE REQUEST
+    Route::get('/schedule-request', 'App\Http\Controllers\ScheduleRequestController@index');
+    Route::get('/data-schedule-request', 'App\Http\Controllers\ScheduleRequestController@data');
+    Route::post('/store-schedule-request', 'App\Http\Controllers\ScheduleRequestController@store');
+    Route::post('/update-schedule-request', 'App\Http\Controllers\ScheduleRequestController@update');
+    Route::post('/delete-schedule-request', 'App\Http\Controllers\ScheduleRequestController@delete');
+    Route::post('/update-status-schedule-request', 'App\Http\Controllers\ScheduleRequestController@updateStatus');
+
     // SHCEDULE
     Route::get('/schedule', 'App\Http\Controllers\ScheduleController@index');
     Route::get('/data-schedule', 'App\Http\Controllers\ScheduleController@data');
