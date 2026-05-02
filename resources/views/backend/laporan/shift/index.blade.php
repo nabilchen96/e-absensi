@@ -117,8 +117,46 @@
                             @php
                                 $users = DB::table('users')
                                     ->leftjoin('detail_users', 'detail_users.user_id', '=', 'users.id')
-                                    ->select('users.*', 'detail_users.nip')
-                                    ->get();
+                                    ->select('users.*', 'detail_users.nip');
+
+                                if (Auth::user()->role == 'Admin') {
+                                    $users = $users->get();
+
+                                    // 🏢 ROLE OPD → pegawai dalam unit kerja yang sama
+                                } elseif (Auth::user()->role == 'OPD') {
+                                    $idUnitKerja = Auth::user()->id_unit_kerja_pandu; //107
+
+                                    $users = $users
+                                        ->leftjoin('lokasi_kerja_users', 'lokasi_kerja_users.id_user', '=', 'users.id')
+                                        // ->leftjoin('lokasi_kerja_users', 'lokasi_kerja_users.id_lokasi_kerja', '=', 'lokasi_kerjas.id')
+                                        ->leftjoin(
+                                            'lokasi_kerjas',
+                                            'lokasi_kerjas.id',
+                                            '=',
+                                            'lokasi_kerja_users.id_lokasi_kerja',
+                                        )
+                                        ->where('lokasi_kerjas.id_pandu', $idUnitKerja)
+                                        ->get();
+
+                                } elseif (Auth::user()->role == 'SKPD') {
+                                    $idSkpd = Auth::user()->id_skpd_pandu;
+
+                                    $users = $users
+                                        ->leftJoin('lokasi_kerja_users', 'lokasi_kerja_users.id_user', '=', 'users.id')
+                                        ->leftJoin(
+                                            'lokasi_kerjas',
+                                            'lokasi_kerjas.id',
+                                            '=',
+                                            'lokasi_kerja_users.id_lokasi_kerja',
+                                        )
+                                        ->whereIn('lokasi_kerjas.id_pandu', function ($q) use ($idSkpd) {
+                                            $q->select('id_unit_kerja_pandu')
+                                                ->from('users')
+                                                ->where('id_skpd_pandu', $idSkpd)
+                                                ->whereNotNull('id_unit_kerja_pandu');
+                                        })
+                                        ->get();
+                                }
                             @endphp
                             @foreach ($users as $user)
                                 <option value="{{ $user->id }}">{{ $user->name }} [ NIP: {{ @$user->nip }} ]

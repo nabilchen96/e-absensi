@@ -56,22 +56,6 @@ class ScheduleRequestController extends Controller
             });
         }
 
-        // Filter tanggal dari
-        // if (!empty($tanggalDari)) {
-        //     $query->whereDate('tanggal', '>=', $tanggalDari);
-        // }
-
-        // // Filter tanggal sampai
-        // if (!empty($tanggalSampai)) {
-        //     $query->whereDate('tanggal', '<=', $tanggalSampai);
-        // }
-
-        // Default: sembunyikan tanggal yang sudah lewat (jika tidak ada filter)
-        // $punyaFilter = $keyword || $idUser || $tanggalDari || $tanggalSampai;
-        // if (!$punyaFilter) {
-        //     $query->whereDate('tanggal', '>=', date('Y-m-d'));
-        // }
-
         // 🌟 PENGURUTAN / GROUPING: Nama lalu Tanggal
         $query->orderBy('users.name', 'asc');
 
@@ -88,6 +72,22 @@ class ScheduleRequestController extends Controller
                     // ->leftjoin('lokasi_kerja_users', 'lokasi_kerja_users.id_lokasi_kerja', '=', 'lokasi_kerjas.id')
                     ->leftjoin('lokasi_kerjas', 'lokasi_kerjas.id', '=', 'lokasi_kerja_users.id_lokasi_kerja')
                     ->where('lokasi_kerjas.id_pandu', $idUnitKerja)->get();
+        }
+
+        elseif(Auth::user()->role == 'SKPD'){
+
+            $idSkpd = Auth::user()->id_skpd_pandu;
+
+            $query = $query
+                ->leftJoin('lokasi_kerja_users', 'lokasi_kerja_users.id_user', '=', 'users.id')
+                ->leftJoin('lokasi_kerjas', 'lokasi_kerjas.id', '=', 'lokasi_kerja_users.id_lokasi_kerja')
+                ->whereIn('lokasi_kerjas.id_pandu', function ($q) use ($idSkpd) {
+                    $q->select('id_unit_kerja_pandu')
+                    ->from('users')
+                    ->where('id_skpd_pandu', $idSkpd)
+                    ->whereNotNull('id_unit_kerja_pandu');
+                })
+                ->get();
         }
 
         else{

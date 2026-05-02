@@ -23,14 +23,25 @@
                     </button>
 
                     <div class="d-flex gap-2 align-items-start mb-3">
-                        <select class="flex-grow-1" placeholder="Cari OPD" id="id_opd_pandu"
-                            name="id_opd_pandu" required>
+                        <select class="flex-grow-1" placeholder="Cari OPD" id="id_opd_pandu" name="id_opd_pandu" required>
                             @php
                                 $lokasi = DB::table('lokasi_kerjas')->select('lokasi_kerjas.*');
-                                if(Auth::user()->role == 'Admin'){
+
+                                if (Auth::user()->role == 'Admin') {
                                     $lokasi = $lokasi->get();
-                                }elseif(Auth::user()->role == 'OPD'){
+                                } elseif (Auth::user()->role == 'OPD') {
                                     $lokasi = $lokasi->where('id_pandu', Auth::user()->id_unit_kerja_pandu)->get();
+                                } elseif (Auth::user()->role == 'SKPD') {
+                                    $idSkpd = Auth::user()->id_skpd_pandu;
+
+                                    $lokasi = $lokasi
+                                        ->whereIn('lokasi_kerjas.id_pandu', function ($q) use ($idSkpd) {
+                                            $q->select('id_unit_kerja_pandu')
+                                                ->from('users')
+                                                ->where('id_skpd_pandu', $idSkpd)
+                                                ->whereNotNull('id_unit_kerja_pandu');
+                                        })
+                                        ->get();
                                 }
                             @endphp
                             @foreach ($lokasi as $l)
@@ -79,10 +90,21 @@
                             @php
                                 $lokasi = DB::table('lokasi_kerjas')->select('lokasi_kerjas.*');
 
-                                if(Auth::user()->role == 'Admin'){
+                                if (Auth::user()->role == 'Admin') {
                                     $lokasi = $lokasi->get();
-                                }elseif(Auth::user()->role == 'OPD'){
+                                } elseif (Auth::user()->role == 'OPD') {
                                     $lokasi = $lokasi->where('id_pandu', Auth::user()->id_unit_kerja_pandu)->get();
+                                } elseif (Auth::user()->role == 'SKPD') {
+                                    $idSkpd = Auth::user()->id_skpd_pandu;
+
+                                    $lokasi = $lokasi
+                                        ->whereIn('lokasi_kerjas.id_pandu', function ($q) use ($idSkpd) {
+                                            $q->select('id_unit_kerja_pandu')
+                                                ->from('users')
+                                                ->where('id_skpd_pandu', $idSkpd)
+                                                ->whereNotNull('id_unit_kerja_pandu');
+                                        })
+                                        ->get();
                                 }
                             @endphp
                             @foreach ($lokasi as $l)

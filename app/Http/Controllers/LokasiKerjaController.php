@@ -37,6 +37,20 @@ class LokasiKerjaController extends Controller
             $query = $query->where('id_pandu', $id_unit_kerja_pandu)->get();
         }
 
+        elseif(Auth::user()->role == 'SKPD'){
+
+            $idSkpd = Auth::user()->id_skpd_pandu;
+
+            $query = $query
+                ->whereIn('lokasi_kerjas.id_pandu', function ($q) use ($idSkpd) {
+                    $q->select('id_unit_kerja_pandu')
+                    ->from('users')
+                    ->where('id_skpd_pandu', $idSkpd)
+                    ->whereNotNull('id_unit_kerja_pandu');
+                })
+                ->get();
+        }
+
 
 
         return response()->json(['data' => $query]);

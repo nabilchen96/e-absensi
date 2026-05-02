@@ -10,7 +10,6 @@
         <div class="col-12 mt-4">
             <div class="card w-100">
                 <div class="card-body">
-
                     <button type="button" class="btn btn-primary btn-md mb-4 d-none d-md-inline-block" data-toggle="modal"
                         data-target="#modal">
                         Tambah
