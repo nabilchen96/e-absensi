@@ -15,7 +15,7 @@
             <div class="card w-100">
                 <div class="card-body">
 
-                    @if($data->status == 'Pengajuan' || $data->status == 'Diterima')
+                    @if(@$data->status == 'Pengajuan' || @$data->status == 'Diterima')
 
                         <div class="alert alert-info">
                             Status Jadwal anda saat ini dalam <b>{{$data->status}}</b>. Anda tidak dapat menambah, mengedit, atau menghapus jadwal saat ini.

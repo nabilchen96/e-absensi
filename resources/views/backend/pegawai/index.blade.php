@@ -37,6 +37,7 @@
                                     <th width="5%">No</th>
                                     <th>Name</th>
                                     <th>Email</th>
+                                    <th>Lokasi Kerja</th>
                                     <th>Role</th>
                                     <th>Created At</th>
                                     <th width="5%">Aksi</th>

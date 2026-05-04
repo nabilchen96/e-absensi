@@ -28,6 +28,7 @@ function getData() {
             },
             { data: "name" },
             { data: "email" },
+            { data: "lokasi_kerja" },
             { data: "role" },
             { data: "created_at" },
             {

@@ -17,6 +17,10 @@ class ScheduleController extends Controller
 
         $data = DB::table('schedule_requests')->where('id', Request('id'))->first();
 
+        if(!$data){
+            return back();
+        }
+
         return view('backend.schedule.index', [
             'data' => $data
         ]);
