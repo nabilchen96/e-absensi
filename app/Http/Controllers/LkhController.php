@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use App\Models\Lkh;
+use App\Models\LKH;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
 use DB;
@@ -98,7 +98,7 @@ class LkhController extends Controller
             //GET DATA USER
             // $user = DB::table('users')->where('id_pandu', $request->id_pandu)->first();
 
-            Lkh::create([
+            LKH::create([
                 'user_id' => Auth::id(),
                 'tanggal' => $request->tanggal,
                 'waktu' => $request->waktu,
@@ -157,7 +157,7 @@ class LkhController extends Controller
                 ]);
             }
 
-            $data = Lkh::find($request->id);
+            $data = LKH::find($request->id);
             $data->update($request->all());
 
             DB::commit();
@@ -181,7 +181,7 @@ class LkhController extends Controller
 
     public function delete(Request $request)
     {
-        Lkh::find($request->id)->delete();
+        LKH::find($request->id)->delete();
 
         return response()->json([
             'responCode' => 1,
