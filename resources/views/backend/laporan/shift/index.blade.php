@@ -1,25 +1,5 @@
 @extends('backend.app')
 @section('content')
-    <style>
-        @media (max-width: 768px) {
-
-            /* .card,
-        .card-body {
-            background: none !important;
-            box-shadow: none !important;
-            padding: 0 !important;
-            border: none !important;
-        } */
-
-            .card:not(.keep-style),
-            .card:not(.keep-style) .card-body:not(.keep-style) {
-                background: none !important;
-                box-shadow: none !important;
-                padding: 0 !important;
-                border: none !important;
-            }
-        }
-    </style>
     <div class="row" style="margin-top: -200px;">
         <div class="col-md-12 text-white">
             <div class="row">
@@ -39,10 +19,9 @@
                         <i class="bi bi-search"></i> Cari
                     </button>
                     <div class="row">
-
                         <div class="col-lg-3 mb-4">
                             <div class="card bg-gradient-success card-img-holder keep-style text-white">
-                                <div class="card-body keep-style">
+                                <div class="card-body keep-style" style="background: green !important; padding: 20px !important;">
                                     <img src="https://themewagon.github.io/purple-react/static/media/circle.953c9ca0.svg"
                                         class="card-img-absolute" alt="circle">
                                     <h4 class="font-weight-normal mb-3">
@@ -57,7 +36,7 @@
 
                         <div class="col-lg-3 mb-4">
                             <div class="card bg-gradient-primary card-img-holder keep-style text-white">
-                                <div class="card-body keep-style">
+                                <div class="card-body keep-style" style="background: green !important; padding: 20px !important;">
                                     <img src="https://themewagon.github.io/purple-react/static/media/circle.953c9ca0.svg"
                                         class="card-img-absolute" alt="circle">
                                     <h4 class="font-weight-normal mb-3">
@@ -72,7 +51,7 @@
 
                         <div class="col-lg-3 mb-4">
                             <div class="card bg-gradient-info card-img-holder keep-style text-white">
-                                <div class="card-body keep-style">
+                                <div class="card-body keep-style" style="background: green !important; padding: 20px !important;">
                                     <img src="https://themewagon.github.io/purple-react/static/media/circle.953c9ca0.svg"
                                         class="card-img-absolute" alt="circle">
                                     <h4 class="font-weight-normal mb-3">
@@ -86,7 +65,7 @@
                         </div>
                         <div class="col-lg-3 mb-4">
                             <div class="card bg-gradient-danger card-img-holder keep-style text-white">
-                                <div class="card-body keep-style">
+                                <div class="card-body keep-style" style="background: green !important; padding: 20px !important;">
                                     <img src="https://themewagon.github.io/purple-react/static/media/circle.953c9ca0.svg"
                                         class="card-img-absolute" alt="circle">
                                     <h4 class="font-weight-normal mb-3">

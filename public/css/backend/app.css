@@ -117,21 +117,21 @@ table.dataTable thead .sorting_desc::before {
 
 @media (max-width: 768px) {
 
-    /* .card,
+    .card,
     .card-body {
         background: none !important;
         box-shadow: none !important;
         padding: 0 !important;
         border: none !important;
-    } */
+    }
 
-    .card:not(.keep-style),
+    /* .card:not(.keep-style),
     .card:not(.keep-style) .card-body:not(.keep-style) {
         background: none !important;
         box-shadow: none !important;
         padding: 0 !important;
         border: none !important;
-    }
+    } */
 
     .table-striped>tbody>tr {
         background-color: #ffffff !important;
