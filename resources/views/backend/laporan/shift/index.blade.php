@@ -21,8 +21,8 @@
                     <div class="row">
 
                         <div class="col-lg-3 mb-4">
-                            <div class="card bg-gradient-success card-img-holder text-white">
-                                <div class="card-body">
+                            <div class="card bg-gradient-success card-img-holder keep-style text-white">
+                                <div class="card-body keep-style">
                                     <img src="https://themewagon.github.io/purple-react/static/media/circle.953c9ca0.svg"
                                         class="card-img-absolute" alt="circle">
                                     <h4 class="font-weight-normal mb-3">
@@ -36,8 +36,8 @@
                         </div>
 
                         <div class="col-lg-3 mb-4">
-                            <div class="card bg-gradient-primary card-img-holder text-white">
-                                <div class="card-body">
+                            <div class="card bg-gradient-primary card-img-holder keep-style text-white">
+                                <div class="card-body keep-style">
                                     <img src="https://themewagon.github.io/purple-react/static/media/circle.953c9ca0.svg"
                                         class="card-img-absolute" alt="circle">
                                     <h4 class="font-weight-normal mb-3">
@@ -51,8 +51,8 @@
                         </div>
 
                         <div class="col-lg-3 mb-4">
-                            <div class="card bg-gradient-info card-img-holder text-white">
-                                <div class="card-body">
+                            <div class="card bg-gradient-info card-img-holder keep-style text-white">
+                                <div class="card-body keep-style">
                                     <img src="https://themewagon.github.io/purple-react/static/media/circle.953c9ca0.svg"
                                         class="card-img-absolute" alt="circle">
                                     <h4 class="font-weight-normal mb-3">
@@ -65,8 +65,8 @@
                             </div>
                         </div>
                         <div class="col-lg-3 mb-4">
-                            <div class="card bg-gradient-danger card-img-holder text-white">
-                                <div class="card-body">
+                            <div class="card bg-gradient-danger card-img-holder keep-style text-white">
+                                <div class="card-body keep-style">
                                     <img src="https://themewagon.github.io/purple-react/static/media/circle.953c9ca0.svg"
                                         class="card-img-absolute" alt="circle">
                                     <h4 class="font-weight-normal mb-3">
@@ -137,7 +137,6 @@
                                         )
                                         ->where('lokasi_kerjas.id_pandu', $idUnitKerja)
                                         ->get();
-
                                 } elseif (Auth::user()->role == 'SKPD') {
                                     $idSkpd = Auth::user()->id_skpd_pandu;
 
@@ -156,7 +155,7 @@
                                                 ->whereNotNull('id_unit_kerja_pandu');
                                         })
                                         ->get();
-                                } elseif(Auth::user()->role == 'Pegawai'){
+                                } elseif (Auth::user()->role == 'Pegawai') {
                                     $users = $users->where('users.id', Auth::id())->get();
                                 }
                             @endphp
