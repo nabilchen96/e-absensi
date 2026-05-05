@@ -1,5 +1,25 @@
 @extends('backend.app')
 @section('content')
+    <style>
+        @media (max-width: 768px) {
+
+            /* .card,
+        .card-body {
+            background: none !important;
+            box-shadow: none !important;
+            padding: 0 !important;
+            border: none !important;
+        } */
+
+            .card:not(.keep-style),
+            .card:not(.keep-style) .card-body:not(.keep-style) {
+                background: none !important;
+                box-shadow: none !important;
+                padding: 0 !important;
+                border: none !important;
+            }
+        }
+    </style>
     <div class="row" style="margin-top: -200px;">
         <div class="col-md-12 text-white">
             <div class="row">
