@@ -156,6 +156,8 @@
                                                 ->whereNotNull('id_unit_kerja_pandu');
                                         })
                                         ->get();
+                                } elseif(Auth::user()->role == 'Pegawai'){
+                                    $users = $users->where('users.id', Auth::id())->get();
                                 }
                             @endphp
                             @foreach ($users as $user)

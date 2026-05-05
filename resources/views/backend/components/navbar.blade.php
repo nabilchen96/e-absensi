@@ -120,9 +120,11 @@
                     <li class="nav-item">
                         <a class="nav-link" href="{{ url('laporan-shift') }}">Lap. Shift</a>
                     </li>
+                    @if(Auth::user()->role != 'Pegawai')
                     <li class="nav-item">
                         <a class="nav-link" href="{{ url('laporan-rekap') }}">Lap. Rekap</a>
                     </li>
+                    @endif
                 </ul>
             </div>
         </li>

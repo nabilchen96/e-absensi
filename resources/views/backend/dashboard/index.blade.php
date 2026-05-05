@@ -421,7 +421,7 @@
                     <span class="menu-text">Cuti</span>
                 </div>
             </a>
-            <a href="#" class="col-4 mt-4">
+            <a href="{{ url('lkh') }}" class="col-4 mt-4">
                 <div class="bg-primary d-flex flex-column justify-content-center align-items-center text-white"
                     style="width: 100%; height: 65px; border-radius: 8px;">
                     <i style="font-size: 1rem;" class="bi bi-file-earmark-text fs-2"></i>

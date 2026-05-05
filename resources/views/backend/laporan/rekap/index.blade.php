@@ -106,6 +106,7 @@
                                         })
                                         ->get();
                                 }
+                            
                             @endphp
                             @foreach ($lokasi as $l)
                                 <option value="{{ $l->id_pandu }}">
