@@ -101,15 +101,13 @@ function getData() {
 
                     let konfirmasiBtn = '';
 
-                    if (role !== 'Pegawai') {
-                        konfirmasiBtn = `
-                            <a class="dropdown-item text-info"
-                            data-toggle="modal" data-target="#modalStatus"
-                            href="javascript:void(0)" data-bs-id="${row.id}">
-                            <i class="bi bi-check-square"></i> Ubah Status
-                            </a>
-                        `;
-                    }
+                    konfirmasiBtn = `
+                        <a class="dropdown-item text-info"
+                        data-toggle="modal" data-target="#modalStatus"
+                        href="javascript:void(0)" data-bs-id="${row.id}">
+                        <i class="bi bi-check-square"></i> Ubah Status
+                        </a>
+                    `;
 
                     return `
                     <div class="dropdown">
