@@ -67,7 +67,7 @@ class AbsensiService
 
             $usedScans = [];
 
-            foreach ($schedules as $sch) {
+            foreach ($schedules as $index => $sch) {
 
                 $shiftStart = new DateTime($tanggal . ' ' . $sch->jam_masuk);
 
@@ -102,6 +102,57 @@ class AbsensiService
                         $scanPulang = $scan;
                         $usedScans[] = $i;
                         break;
+                    }
+                }
+
+                $nextSchedule = $schedules[$index + 1] ?? null;
+
+                $maxCheckoutTime = null;
+
+                if ($nextSchedule) {
+
+                    $nextShiftDate = $nextSchedule->tanggal;
+
+                    $maxCheckoutTime = new DateTime(
+                        $nextShiftDate . ' ' . $nextSchedule->jam_masuk
+                    );
+                }
+
+                // =========================
+                // FALLBACK 4 JAM
+                // =========================
+                if (!$scanPulang && $scanMasuk) {
+
+                    foreach ($absensis as $i => $scan) {
+
+                        if (in_array($i, $usedScans)) continue;
+
+                        // harus setelah scan masuk
+                        if ($scan <= $scanMasuk) continue;
+
+                        $selisihDetik = $scan->getTimestamp() - $scanMasuk->getTimestamp();
+
+                        // minimal 4 jam dan maksimal 12 jam
+                        // if ($selisihDetik >= (4 * 3600)) {
+
+                        //     $scanPulang = $scan;
+                        //     $usedScans[] = $i;
+
+                        //     break;
+                        // }
+
+                        if ($selisihDetik >= (4 * 3600) && $selisihDetik <= (12 * 3600)) {
+
+                            // jangan ambil scan milik shift berikutnya
+                            if ($maxCheckoutTime && $scan >= $maxCheckoutTime) {
+                                continue;
+                            }
+
+                            $scanPulang = $scan;
+                            $usedScans[] = $i;
+
+                            break;
+                        }
                     }
                 }
 
