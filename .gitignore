@@ -4,6 +4,7 @@
 /public/hot
 /public/storage
 /public/absensi
+/public/bukti-absensi
 /storage/*.key
 /vendor
 .env
