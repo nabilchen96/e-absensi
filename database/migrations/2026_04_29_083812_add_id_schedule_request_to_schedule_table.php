@@ -13,11 +13,6 @@ return new class extends Migration
     {
         Schema::table('schedules', function (Blueprint $table) {
             $table->BigInteger('id_schedule_request')->nullable()->after('id');
-    
-            $table->foreign('id_schedule_request')
-                ->references('id')
-                ->on('schedule_requests')
-                ->onDelete('cascade');
         });
     }
 
