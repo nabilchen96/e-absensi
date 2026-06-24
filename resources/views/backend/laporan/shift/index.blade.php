@@ -55,11 +55,11 @@
                                     <img src="https://themewagon.github.io/purple-react/static/media/circle.953c9ca0.svg"
                                         class="card-img-absolute" alt="circle">
                                     <h4 class="font-weight-normal mb-3">
-                                        Total Absen
+                                        Total Absensi
                                         <i class="bi bi-person-circle float-right"></i>
                                     </h4>
-                                    <h2 id="totalHadir">0</h2>
-                                    <span>Datang dan Pulang</span>
+                                    <h2 id="totalMasuk">0</h2>
+                                    <span>Scan Masuk</span>
                                 </div>
                             </div>
                         </div>
@@ -69,11 +69,11 @@
                                     <img src="https://themewagon.github.io/purple-react/static/media/circle.953c9ca0.svg"
                                         class="card-img-absolute" alt="circle">
                                     <h4 class="font-weight-normal mb-3">
-                                        Total Jadwal
+                                        Total Absensi
                                         <i class="bi bi-person-circle float-right"></i>
                                     </h4>
-                                    <h2 id="totalShift">0</h2>
-                                    <span>Shift</span>
+                                    <h2 id="totalPulang">0</h2>
+                                    <span>Scan Pulang</span>
                                 </div>
                             </div>
                         </div>
@@ -92,7 +92,7 @@
                                     <th>Terlambat</th>
                                     {{-- <th>Pulang Cepat</th> --}}
                                     <th>Total</th>
-                                    <th>Status</th>
+                                    {{-- <th>Status</th> --}}
                                 </tr>
                             </thead>
                         </table>
@@ -119,7 +119,7 @@
                                     ->select('users.*', 'detail_users.nip');
 
                                 if (Auth::user()->role == 'Admin') {
-                                    $users = $users->get();
+                                    $users = $users->whereNot('role', ['Admin'])->get();
 
                                     // 🏢 ROLE OPD → pegawai dalam unit kerja yang sama
                                 } elseif (Auth::user()->role == 'OPD') {
@@ -159,6 +159,7 @@
                                 }
                             @endphp
                             @foreach ($users as $user)
+                                <option value="999999">Pilih User</option>
                                 <option value="{{ $user->id }}">{{ $user->name }} [ NIP: {{ @$user->nip }} ]
                                 </option>
                             @endforeach

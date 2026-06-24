@@ -99,6 +99,7 @@ Route::group(['middleware' => 'auth'], function () {
     Route::get('/data-absensi', 'App\Http\Controllers\AbsensiController@getData');
     Route::post('/store-absensi', 'App\Http\Controllers\AbsensiController@store');
     Route::post('/delete-absensi', 'App\Http\Controllers\AbsensiController@delete');
+    Route::post('/verifikasi-absensi', 'App\Http\Controllers\AbsensiController@verifikasi');
 
 
     // PERIZINAN
@@ -127,6 +128,8 @@ Route::group(['middleware' => 'auth'], function () {
     // LAPORAN SHIFT CONTROLLER
     Route::get('/laporan-shift', 'App\Http\Controllers\LaporanShiftController@index');
     Route::get('/data-laporan-shift', 'App\Http\Controllers\LaporanShiftController@data');
+    Route::get('/laporan-shift-opd', 'App\Http\Controllers\LaporanShiftController@opd');
+    Route::get('/data-laporan-shift-opd', 'App\Http\Controllers\LaporanShiftController@dataOpd');
 
     // LAPORAN REKAP CONTROLLER
     Route::get('/laporan-rekap', 'App\Http\Controllers\LaporanRekapController@index');

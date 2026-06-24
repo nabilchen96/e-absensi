@@ -15,7 +15,12 @@ class Absensi extends Model
         'longitude',
         'user_id',
         'datetime',
-        'jarak'
+        'jarak',
+        'jenis_absensi',
+        'status_shift',
+        'alasan',
+        'bukti',
+        'status_absensi'
     ];
 
     public function user() {

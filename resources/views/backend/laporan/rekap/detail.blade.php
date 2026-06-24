@@ -34,8 +34,8 @@
                                     <th>Nama</th>
                                     <th>Jam Kerja </th>
                                     <th>Total Terlambat</th>
-                                    <th>Total Hadir</th>
-                                    <th>Total Jadwal</th>
+                                    <th>Total Scan Masuk</th>
+                                    <th>Total Scan Pulang</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -45,8 +45,8 @@
                                         <td>{{ $item->name }}</td>
                                         <td>{{ gmdate('H:i:s', $item->detik_kerja) }}</td>
                                         <td>{{ gmdate('H:i:s', $item->detik_terlambat) }}</td>
-                                        <td>{{ $item->total_hadir }}X</td>
-                                        <td>{{ $item->total_jadwal }}X</td>
+                                        <td>{{ $item->total_absensi_masuk }}X</td>
+                                        <td>{{ $item->total_absensi_pulang }}X</td>
                                     </tr>
                                 @endforeach
                             </tbody>

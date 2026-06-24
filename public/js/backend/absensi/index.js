@@ -2,9 +2,111 @@ document.addEventListener('DOMContentLoaded', function () {
     getData();
     initCamera();
     getLocation();
+
+    $("#jarak").val(
+        jarak.toLocaleString('id-ID', {
+            minimumFractionDigits: 3,
+            maximumFractionDigits: 3
+        })
+    );
 });
 
+$("#filterShift, #filterStatus").on("change", function () {
+    table.ajax.reload();
+});
+
+$("#jenis_absensi").on("change", function () {
+
+    if ($(this).val() == "") {
+
+        $("#form_absensi_detail").hide();
+
+    } else {
+
+        $("#form_absensi_detail").show();
+
+        getLocation();
+    }
+
+});
+
+function cekStatusAbsensi(jarak = null) {
+
+    const jenis = $("#jenis_absensi").val();
+
+    if (!jenis) return;
+
+    const sekarang = new Date();
+
+    const menitSekarang =
+        sekarang.getHours() * 60 +
+        sekarang.getMinutes();
+
+    let shiftReguler = false;
+
+    if (jenis === "masuk") {
+
+        const mulai = (7 * 60) + 30;
+        const selesai = (12 * 60);
+
+        shiftReguler =
+            menitSekarang >= mulai &&
+            menitSekarang <= selesai;
+
+    } else if (jenis === "pulang") {
+
+        const mulai = (16 * 60);
+        const selesai = (18 * 60);
+
+        shiftReguler =
+            menitSekarang >= mulai &&
+            menitSekarang <= selesai;
+    }
+
+    let dalamArea = true;
+
+    if (jarak !== null) {
+        dalamArea = jarak <= 50;
+    }
+
+    $("#status_shift").val(
+        shiftReguler
+            ? "reguler"
+            : "non_reguler"
+    );
+
+    $("#status_lokasi").val(
+        dalamArea
+            ? "dalam_area"
+            : "luar_area"
+    );
+
+    const wajibBukti =
+        !shiftReguler ||
+        !dalamArea;
+
+    if (wajibBukti) {
+
+        $("#field_non_reguler").show();
+
+        $("#bukti").prop("required", true);
+
+        $("#alasan").prop("required", true);
+
+    } else {
+
+        $("#field_non_reguler").hide();
+
+        $("#bukti").prop("required", false);
+
+        $("#alasan").prop("required", false);
+
+    }
+
+}
+
 const kantor = window.APP_DATA.lokasiKantor;
+const role   = window.APP_DATA.role;
 
 let kantorLat = null;
 let kantorLng = null;
@@ -64,12 +166,14 @@ function getData() {
     table = $("#myTable").DataTable({
         ordering: true,
         processing: true,
-        searching: false,
+        searching: true,
         lengthChange: false,
         ajax: {
             url: '/data-absensi',
             data: function (d) {
                 d.keyword = $("#searchInput").val();
+                d.shift = $("#filterShift").val();
+                d.status_absensi = $("#filterStatus").val();
             }
         },
         columns: [
@@ -81,59 +185,70 @@ function getData() {
             {
                 render: function (data, type, row, meta) {
                     return `
-                        <img src="/absensi/${row.foto}" style="border-radius: 8px; width: 80px; height: 80px; object-fit: fit;">
+                        <img src="/absensi/${row.foto}" style="border: grey 1px solid; border-radius: 8px; width: 80px; height: 80px; object-fit: fit;">
+                        <br><br>
+                        <b>Pegawai:</b><br>
+                        ${row.name}<br>
+                        <b>${row.nip}</b>
                     `;
                 }
             },
-            { data: 'name' },
             {
                 render: function (data, type, row, meta) {
                     return `
-                        <b class="d-md-none">Latitude, Longitude</b>
-                        <br class="d-md-none"> 
-                        
-                        <span class="d-md-none">${row.latitude}, ${row.longitude}</span>
+                        <b>Longitude:</b><br>
+                        ${row.longitude}<br><br>
 
-                        <span class="d-none d-md-inline-block">${row.latitude}</span>
-                    `;
-                }
-            },
-            {
-                render: function (data, type, row, meta) {
-                    return `
-                        <span class="d-none d-md-inline-block">${row.longitude}</span>
-                    `;
-                }
-            },
-            {
-                render: function (data, type, row, meta) {
-                    return `
-                        <b class="d-md-none">Waktu Absen: </b><br class="d-md-none"> 
-                        ${row.datetime}
-                    `;
-                }
-            },
-            {
-                render: function (data, type, row, meta) {
+                        <b>Latitude:</b><br>
+                        ${row.latitude}<br><br>
 
-                    if (!row.jarak) {
-                        return '-';
+                        <b>Jarak: </b></br>
+                        ${row.jarak ?? '-'}
+                    `;
+                }
+            },
+            {
+                render: function (data, type, row, meta) {
+                    return `
+                        <b>Jenis Absensi: </b><br> 
+                        ${row.jenis_absensi ?? '-'}<br></br>
+
+                        <b>Identifikasi Shift: </b></br>
+                        ${row.status_shift ?? 'Belum Dicek'}<br></br>
+
+                        <b>Alasan: </b><br> 
+                        ${row.alasan ?? '-'}
+                    `;
+                }
+            },
+            {
+                render: function (data, type, row, meta) {
+                    return `
+                    <b>Status Absen:</b><br>
+                    ${row.status_absensi ?? ''}<br><br>
+                    
+                    
+                    <b>Waktu Absen: </b><br> 
+                    ${row.datetime}<br><br>
+                    
+                    
+                    <b>Bukti: </b><br> 
+                    <a href="/bukti-absensi/${row.bukti}">Bukti Dukung</a>`;
+                }
+            },
+            {
+                render: function (data, type, row, meta) {
+                    
+                    let tombolVerifikasi = '';
+
+                    if (role !== 'Pegawai') {
+                        tombolVerifikasi = `
+                            <a href="#" class="dropdown-item text-success" onclick="verifikasiData(${row.id})">
+                                <i class="bi bi-patch-check"></i> Terima Absensi
+                            </a>
+                        `;
                     }
 
-                    const jarakAngka = parseFloat(
-                        row.jarak.replace(/\./g, '').replace(',', '.')
-                    );
-
-                    if (isNaN(jarakAngka)) {
-                        return '-';
-                    }
-
-                    const hasil = Math.floor(jarakAngka).toLocaleString('id-ID');
-                    return `${hasil} Meter`;
-                }
-            },
-            {
-                render: function (data, type, row, meta) {
                     return `
                     <div class="dropdown">
                         <a class="text-success" href="#" data-toggle="dropdown">
@@ -143,6 +258,7 @@ function getData() {
                             <a href="#" class="dropdown-item text-danger" onclick="hapusData(${row.id})">
                                 <i class="bi bi-trash"></i> Hapus
                             </a>
+                            ${tombolVerifikasi}
                         </div>
                     </div>
                     `;
@@ -275,6 +391,38 @@ hapusData = (id) => {
     });
 }
 
+verifikasiData = (id) => {
+
+    Swal.fire({
+        title: "Yakin Terima Data Absensi?",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#d33",
+        confirmButtonText: "Ya",
+        cancelButtonColor: "#3085d6",
+        cancelButtonText: "Batal"
+    }).then((result) => {
+
+        if (result.value) {
+
+            axios.post("/verifikasi-absensi", { id })
+                .then(res => {
+
+                    Swal.fire({
+                        icon: "success",
+                        title: "Berhasil",
+                        timer: 2000,
+                        showConfirmButton: false
+                    });
+
+                    table.destroy();
+                    getData();
+
+                });
+        }
+    });
+}
+
 // =========================
 // CAMERA
 // =========================
@@ -328,7 +476,7 @@ function getLocation() {
         // VALIDASI LOKASI KERJA DIPILIH
         // ===============================
         if (
-            !kantorLat || !kantorLng || 
+            !kantorLat || !kantorLng ||
             isNaN(kantorLat) || isNaN(kantorLng)
         ) {
             // kosongkan jika "Pilih Lokasi Kerja"
@@ -354,6 +502,9 @@ function getLocation() {
                 maximumFractionDigits: 3
             })
         );
+
+        // cek reguler / non reguler
+        cekStatusAbsensi(jarak);
 
         // ===============================
         // NOTIFIKASI JARAK

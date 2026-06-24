@@ -364,7 +364,7 @@
                     </div>
                 </div>
             </div>
-            <div class="col-12 mt-4">
+            {{-- <div class="col-12 mt-4">
                 <div class="font-weight-bold text-warning mb-2">
                     JAM KERJA HARI INI <br>
                     {{ now() }}
@@ -394,7 +394,7 @@
 
                     </div>
                 </div>
-            </div>
+            </div> --}}
 
             <div class="col-12 mt-4">
                 <div class="font-weight-bold text-warning">MENU AKSES</div>

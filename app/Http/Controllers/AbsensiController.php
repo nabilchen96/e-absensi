@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Hash;
 use Auth;
 use DB;
+use Carbon\Carbon;
 
 class AbsensiController extends Controller
 {
@@ -33,9 +34,12 @@ class AbsensiController extends Controller
     public function getData(Request $request)
     {
         $keyword = $request->keyword;
+        $shift = $request->shift;
+        $status_absensi = $request->status_absensi;
 
         $query = DB::table('absensis as a')
             ->join('users as u', 'u.id', '=', 'a.user_id')
+            ->leftjoin('detail_users', 'detail_users.user_id', '=', 'u.id')
             ->where('u.role', 'Pegawai')
             ->orderBy('a.id', 'DESC');
 
@@ -44,10 +48,20 @@ class AbsensiController extends Controller
             $query->where('u.name', 'like', "%$keyword%");
         }
 
+        // filter shift
+        if ($shift && $shift != 'Semua') {
+            $query->where('a.status_shift', $shift);
+        }
+
+        // filter status
+        if ($status_absensi && $status_absensi != 'Semua') {
+            $query->where('a.status_absensi', $status_absensi);
+        }
+
         // 👑 ADMIN → semua data
         if (Auth::user()->role == 'Admin') {
 
-            $data = $query->select('a.*', 'u.name')->get();
+            $data = $query->select('a.*', 'u.name', 'detail_users.nip')->get();
 
         }
         // 🏢 OPD → pegawai satu unit kerja
@@ -59,7 +73,12 @@ class AbsensiController extends Controller
                 ->join('lokasi_kerja_users as lku', 'lku.id_user', '=', 'u.id')
                 ->join('lokasi_kerjas as lk', 'lk.id', '=', 'lku.id_lokasi_kerja')
                 ->where('lk.id_pandu', $idUnitKerja)
-                ->select('a.*', 'u.name', 'lk.lokasi_kerja')
+                ->select(
+                    'a.*', 
+                    'u.name', 
+                    'lk.lokasi_kerja',
+                    'detail_users.nip'
+                )
                 ->get();
 
         }
@@ -68,7 +87,7 @@ class AbsensiController extends Controller
 
             $data = $query
                 ->where('a.user_id', Auth::id())
-                ->select('a.*', 'u.name')
+                ->select('a.*', 'u.name', 'detail_users.nip')
                 ->get();
         }
 
@@ -82,9 +101,11 @@ class AbsensiController extends Controller
             'foto'      => 'required',
             'latitude'  => 'required',
             'longitude' => 'required',
-            'jarak'     => 'required'
+            'jarak'     => 'required',
+            'jenis_absensi' => 'required|in:Masuk,Pulang',
         ],[
             'foto.required'     => 'Klik Ambil Foto Terlebih Dahulu',
+            'jenis_absensi.required' => 'Jenis absensi wajib dipilih',
             'jarak.required'    => 'Jarak Wajib Diisi, Pastikan Lokasi Kerja Memiliki Koordinat'
         ]);
 
@@ -120,13 +141,74 @@ class AbsensiController extends Controller
             // simpan file
             file_put_contents($path . '/' . $imageName, $imageData);
 
+
+            //SIMPAN BUKTI FILE JIKA ADA
+            $buktiFile = null;
+
+            if ($request->hasFile('bukti')) {
+
+                $buktiFile = time().'_'.$request->file('bukti')->getClientOriginalName();
+
+                $request->file('bukti')->move(
+                    public_path('bukti-absensi'),
+                    $buktiFile
+                );
+            }
+
+            $jam = now()->format('H:i:s');
+
+            //MENDEFINISIKAN STATUS SHIFT
+            if ($request->jenis_absensi == 'Masuk') {
+
+                if ($jam >= '07:00:00' && $jam <= '12:00:00') {
+                    $statusShift = 'Reguler';
+                }
+
+                elseif ($jam >= '15:00:00' && $jam <= '17:00:00') {
+                    $statusShift = 'Sore';
+                }
+
+                else {
+                    $statusShift = 'Malam';
+                }
+            }
+
+            // dd($statusShift);
+
+            if ($request->jenis_absensi == 'Pulang') {
+
+                if ($jam >= '16:00:00' && $jam <= '18:00:00') {
+                    $statusShift = 'Reguler';
+                }
+
+                elseif (
+                    $jam >= '23:00:00' ||
+                    $jam <= '01:00:00'
+                ) {
+                    $statusShift = 'Sore';
+                }
+
+                elseif (
+                    $jam >= '07:00:00' &&
+                    $jam <= '08:00:00'
+                ) {
+                    $statusShift = 'Malam';
+                }
+            }
+
+
+
             Absensi::create([
-                'foto'      => $imageName,
-                'latitude'  => $request->latitude,
-                'longitude' => $request->longitude,
-                'user_id'   => auth()->user()->id ?? 1,
-                'datetime'  => now(),
-                'jarak'     => $request->jarak
+                'foto'          => $imageName,
+                'latitude'      => $request->latitude,
+                'longitude'     => $request->longitude,
+                'user_id'       => auth()->user()->id ?? 1,
+                'datetime'      => now(),
+                'jarak'         => $request->jarak,
+                'jenis_absensi' => $request->jenis_absensi,
+                'status_shift'  => $statusShift,
+                'alasan'        => $request->alasan,
+                'bukti'         => $buktiFile,
             ]);
 
 
@@ -273,6 +355,35 @@ class AbsensiController extends Controller
 
 
         return response()->json($data);
+    }
+
+    public function verifikasi(Request $request)
+    {
+        $absensi = Absensi::find($request->id);
+
+        if (!$absensi) {
+            return response()->json([
+                'responCode' => 0,
+                'respon' => 'Data absensi tidak ditemukan'
+            ]);
+        }
+
+        if (empty($absensi->status_absensi)) {
+            $absensi->status_absensi = 'Diterima';
+        } else {
+            $absensi->status_absensi =
+                $absensi->status_absensi == 'Diterima'
+                    ? 'Ditolak'
+                    : 'Diterima';
+        }
+
+        $absensi->save();
+
+        return response()->json([
+            'responCode' => 1,
+            'respon' => 'Status absensi berhasil diubah',
+            'status_absensi' => $absensi->status_absensi
+        ]);
     }
 }
 

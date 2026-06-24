@@ -24,18 +24,30 @@
                         halaman
                         <a href="{{ url('/detail-user') }}?id={{ Auth::id() }}">Profil</a>
                     </div>
-
+                    <div class="input-group mb-3">
+                        <select class="custom-select" id="filterShift">
+                            <option value="">Pilih Shift</option>
+                            <option>Semua</option>
+                            <option value="Reguler">Shift Reguler</option>
+                            <option value="Sore">Shift Sore</option>
+                            <option value="Malam">Shift Malam</option>
+                        </select>
+                        <select class="custom-select" id="filterStatus">
+                            <option selected>Pilih Status Absensi</option>
+                            <option>Semua</option>
+                            <option>Diterima</option>
+                            <option>Ditolak</option>
+                        </select>
+                    </div>
                     <div class="table-responsive">
                         <table id="myTable" class="table table-striped" style="width: 100%;">
                             <thead class="bg-info text-white">
                                 <tr>
                                     <th>No</th>
-                                    <th>Foto</th>
                                     <th>User</th>
-                                    <th>Latitude</th>
-                                    <th>Longitude</th>
-                                    <th>Datetime</th>
-                                    <th>Jarak Kantor</th>
+                                    <th>Data Absensi</th>
+                                    <th>Status Absensi</th>
+                                    <th>Status</th>
                                     <th>Aksi</th>
                                 </tr>
                             </thead>
@@ -59,85 +71,121 @@
 
                         <div id="respon_error" class="text-danger"></div>
                         <input type="hidden" name="id" id="id">
-                        <div class="text-center">
 
-
-                            <video style="border: 1px solid grey; border-radius: 8px;" id="camera" width="100%"
-                                height="260" autoplay></video>
-                            {{-- <canvas style="border: 1px solid grey; border-radius: 8px;" id="canvas" width="100%" height="260" class="d-none"></canvas> --}}
-                            <canvas id="canvas" width="350" height="260" class="d-none"></canvas>
-
-                            <br>
-                            <button style="border-radius: 8px !important;" type="button"
-                                class="btn-sm btn-block btn btn-warning mt-2" id="btnCapture">
-                                Ambil Foto
-                            </button>
-
-                            <input type="hidden" id="foto" name="foto">
-
-                            <img id="previewFoto" src="" alt="Preview Foto"
-                                style="border:1px solid grey; border-radius:8px; margin-top:10px; width:100%; height:auto; display:none;">
-
-                        </div>
-
-                        <hr>
-
-                        <div class="row">
-                            <div class="col-lg-6">
-                                <div class="form-group">
-                                    <label>Latitude</label>
-                                    <input type="text" id="latitude" name="latitude" class="form-control" readonly>
-                                </div>
-                            </div>
-                            <div class="col-lg-6">
-                                <div class="form-group">
-                                    <label>Longitude</label>
-                                    <input type="text" id="longitude" name="longitude" class="form-control" readonly>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="form-group mt-2">
-                            <label>Lokasi Kerja</label>
-                            <select required class="form-control" name="id_lokasi_kerja" id="id_lokasi_kerja">
-                                <option value="">Pilih Lokasi Kerja</option>
-                                @php
-                                    @$lk = DB::table('lokasi_kerja_users')
-                                        ->leftjoin(
-                                            'lokasi_kerjas',
-                                            'lokasi_kerjas.id',
-                                            '=',
-                                            'lokasi_kerja_users.id_lokasi_kerja',
-                                        )
-                                        ->select('lokasi_kerjas.*')
-                                        ->where('lokasi_kerja_users.id_user', Auth::id())
-                                        ->get();
-                                @endphp
-                                @foreach (@$lk as $item)
-                                    <option data-lat="{{ $item->latitude }}" data-lng="{{ $item->longitude }}"
-                                        value="{{ $item->id }}">{{ $item->lokasi_kerja }}</option>
-                                @endforeach
+                        <div class="form-group">
+                            <label>Jenis Absensi</label>
+                            <select class="form-control" name="jenis_absensi" id="jenis_absensi" required>
+                                <option value="">Pilih Jenis Absensi</option>
+                                <option value="Masuk">Absen Masuk</option>
+                                <option value="Pulang">Absen Pulang</option>
                             </select>
-                            <span class="text-danger" style="font-size: 12px;">
-                                *Update lokasi kerja anda agar sesuai dengan jarak lokasi kerja saat ini. Update lokasi
-                                kerja di
-                                halaman
-                                <a href="{{ url('/detail-user') }}?id={{ Auth::id() }}">Profil</a>
-                            </span>
                         </div>
 
-                        <div class="form-group mt-2">
-                            <label>Jarak Dari Kantor (Meter)</label>
-                            <input type="text" id="jarak" name="jarak" readonly class="form-control"
-                                placeholder="Jarak (meter)" required>
-                            <span class="text-info" style="font-size: 12px;" id="notifikasi_jarak"></span>
+                        <div id="form_absensi_detail" style="display:none;">
+                            <div class="text-center">
+
+
+                                <video style="border: 1px solid grey; border-radius: 8px;" id="camera" width="100%"
+                                    height="260" autoplay></video>
+                                {{-- <canvas style="border: 1px solid grey; border-radius: 8px;" id="canvas" width="100%" height="260" class="d-none"></canvas> --}}
+                                <canvas id="canvas" width="350" height="260" class="d-none"></canvas>
+
+                                <br>
+                                <button style="border-radius: 8px !important;" type="button"
+                                    class="btn-sm btn-block btn btn-warning mt-2" id="btnCapture">
+                                    Ambil Foto
+                                </button>
+
+                                <input type="hidden" id="foto" name="foto">
+
+                                <img id="previewFoto" src="" alt="Preview Foto"
+                                    style="border:1px solid grey; border-radius:8px; margin-top:10px; width:100%; height:auto; display:none;">
+
+                            </div>
+                            <hr>
+
+                            <div class="row">
+                                <div class="col-lg-6">
+                                    <div class="form-group">
+                                        <label>Latitude</label>
+                                        <input type="text" id="latitude" name="latitude" class="form-control" readonly>
+                                    </div>
+                                </div>
+                                <div class="col-lg-6">
+                                    <div class="form-group">
+                                        <label>Longitude</label>
+                                        <input type="text" id="longitude" name="longitude" class="form-control" readonly>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="form-group mt-2">
+                                <label>Lokasi Kerja</label>
+                                <select required class="form-control" name="id_lokasi_kerja" id="id_lokasi_kerja">
+                                    <option value="">Pilih Lokasi Kerja</option>
+                                    @php
+                                        @$lk = DB::table('lokasi_kerja_users')
+                                            ->leftjoin(
+                                                'lokasi_kerjas',
+                                                'lokasi_kerjas.id',
+                                                '=',
+                                                'lokasi_kerja_users.id_lokasi_kerja',
+                                            )
+                                            ->select('lokasi_kerjas.*')
+                                            ->where('lokasi_kerja_users.id_user', Auth::id())
+                                            ->get();
+                                    @endphp
+                                    @foreach (@$lk as $item)
+                                        <option data-lat="{{ $item->latitude }}" data-lng="{{ $item->longitude }}"
+                                            value="{{ $item->id }}">{{ $item->lokasi_kerja }}</option>
+                                    @endforeach
+                                </select>
+                                <span class="text-danger" style="font-size: 12px;">
+                                    *Update lokasi kerja anda agar sesuai dengan jarak lokasi kerja saat ini. Update lokasi
+                                    kerja di
+                                    halaman
+                                    <a href="{{ url('/detail-user') }}?id={{ Auth::id() }}">Profil</a>
+                                </span>
+                            </div>
+
+                            <div class="form-group mt-2">
+                                <label>Jarak Dari Kantor (Meter)</label>
+                                <input type="text" id="jarak" name="jarak" readonly class="form-control"
+                                    placeholder="Jarak (meter)" required>
+                                <span class="text-info" style="font-size: 12px;" id="notifikasi_jarak"></span>
+                            </div>
+
+                            <iframe
+                                style="margin-bottom: 10px; border: 1px solid grey; border-radius: 8px; height: 250px; width: 100%;"
+                                src="https://www.google.com/maps?q=-3.4391476682335727,102.19011149551001&hl=id&z=13&output=embed"
+                                allowfullscreen="" loading="lazy">
+                            </iframe>
+
+                            <div id="field_non_reguler" class="border rounded p-3 mt-3"
+                                style="display:none;background:#fff8e1;">
+
+                                <div class="form-group">
+                                    <label>Upload Bukti</label>
+                                    <input type="file" class="form-control" id="bukti" name="bukti"
+                                        accept="image/*,.pdf">
+                                </div>
+
+                                <div class="form-group mt-2">
+                                    <label>Alasan</label>
+                                    <textarea placeholder="Alasan" class="form-control" id="alasan" name="alasan" rows="3"></textarea>
+                                </div>
+                                {{-- <div id="info_non_reguler" class="alert alert-warning mt-2" style="display:none;">
+                                </div> --}}
+
+                                <small class="text-danger">
+                                    Wajib diisi apabila absensi dilakukan di luar jam reguler atau di luar area kantor.
+                                </small>
+                                <input type="hidden" name="status_shift" id="status_shift">
+                                <input type="hidden" name="status_lokasi" id="status_lokasi">
+                            </div>
                         </div>
 
-                        <iframe
-                            style="margin-bottom: 10px; border: 1px solid grey; border-radius: 8px; height: 250px; width: 100%;"
-                            src="https://www.google.com/maps?q=-3.4391476682335727,102.19011149551001&hl=id&z=13&output=embed"
-                            allowfullscreen="" loading="lazy">
-                        </iframe>
+
                     </div>
 
                     <div class="modal-footer">
@@ -153,7 +201,8 @@
 @push('script')
     <script>
         window.APP_DATA = {
-            lokasiKantor: @json($data)
+            lokasiKantor: @json($data),
+            role: @json(Auth::user()->role)
         };
     </script>
     <script src="{{ asset('js/backend/absensi/index.js') }}"></script>

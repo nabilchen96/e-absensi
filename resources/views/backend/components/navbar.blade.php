@@ -118,12 +118,15 @@
             <div class="collapse" id="laporan">
                 <ul class="nav flex-column sub-menu">
                     <li class="nav-item">
-                        <a class="nav-link" href="{{ url('laporan-shift') }}">Lap. Shift</a>
+                        <a class="nav-link" href="{{ url('laporan-shift') }}">Lap. Pegawai</a>
                     </li>
                     @if(Auth::user()->role != 'Pegawai')
                     <li class="nav-item">
-                        <a class="nav-link" href="{{ url('laporan-rekap') }}">Lap. Rekap</a>
+                        <a class="nav-link" href="{{ url('laporan-rekap ') }}">Lap. Rekap</a>
                     </li>
+                    {{-- <li class="nav-item">
+                        <a class="nav-link" href="{{ url('laporan-shift-opd ') }}">Lap. Shift OPD</a>
+                    </li> --}}
                     @endif
                 </ul>
             </div>

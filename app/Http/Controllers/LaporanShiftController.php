@@ -8,6 +8,8 @@ use DB;
 use DatePeriod;
 use DateTime;
 use DateInterval;
+use Carbon\Carbon;
+use Carbon\CarbonPeriod;
 
 class LaporanShiftController extends Controller
 {
@@ -18,270 +20,227 @@ class LaporanShiftController extends Controller
 
     }
 
-    function formatJam($detik)
-    {
-        $jam = floor($detik / 3600);
-        $menit = floor(($detik % 3600) / 60);
-        $detik = $detik % 60;
-
-        return sprintf('%02d:%02d:%02d', $jam, $menit, $detik);
-    }
-
     public function data(Request $request){
 
         $start   = $request->start_date; // 2026-01-10
         $end     = $request->end_date;   // 2026-01-15
         $id_user = $request->id_user;
 
-        $dates = [];
-        $period = new DatePeriod(
-            new DateTime($start),
-            new DateInterval('P1D'),
-            (new DateTime($end))->modify('+1 day')
-        );
+        $data = DB::table('absensis as a')
+            ->join('users as u', 'u.id', '=', 'a.user_id')
+            ->select(
+                DB::raw('DATE(a.datetime) as tanggal'),
+                'u.name as nama_pegawai',
+                'a.status_shift as shift',
 
-        foreach ($period as $dt) {
-            $dates[] = $dt->format('Y-m-d');
-        }
+                DB::raw("
+                    MIN(
+                        CASE
+                            WHEN a.jenis_absensi='Masuk'
+                            THEN a.datetime
+                        END
+                    ) as jam_scan_masuk
+                "),
 
-        $absensiRaw = DB::table('absensis')
-            ->where('user_id', $id_user)
-            ->whereBetween('datetime', [
-                $start . ' 00:00:00',
-                date('Y-m-d', strtotime($end . ' +1 day')) . ' 23:59:59'
-            ])
-            ->orderBy('datetime')
-            ->get()
-            ->map(fn($a) => new DateTime($a->datetime));
+                DB::raw("
+                    MAX(
+                        CASE
+                            WHEN a.jenis_absensi='Pulang'
+                            THEN a.datetime
+                        END
+                    ) as jam_scan_pulang
+                ")
+            )
+            ->where('a.status_absensi', 'Diterima')
 
-        $absensiByDate = [];
+            // filter user
+            ->when($id_user, function ($q) use ($id_user) {
+                $q->where('a.user_id', $id_user);
+            })
 
-        foreach ($absensiRaw as $dt) {
-            $key = $dt->format('Y-m-d');
-            $absensiByDate[$key][] = $dt;
-        }
+            // filter tanggal
+            ->when($start && $end, function ($q) use ($start, $end) {
+                $q->whereBetween(
+                    DB::raw('DATE(a.datetime)'),
+                    [$start, $end]
+                );
+            })
 
-        
-        $result = [];
-        
-        $totalDetikKerja = 0;
-        $totalDetikTerlambat = 0;
-        $totalHadir = 0;
-        
-        foreach ($dates as $tanggal) {
+            ->groupBy(
+                DB::raw('DATE(a.datetime)'),
+                'a.user_id',
+                'u.name',
+                'a.status_shift'
+            )
+            ->orderByDesc('tanggal')
+            ->get();
 
-            // schedule hari ini
-            $schedules = DB::table('schedules as s')
-                ->leftjoin('shifts as sh', 'sh.id', '=', 's.id_shift')
-                ->leftjoin('users', 'users.id', '=', 's.id_user')
-                ->join('schedule_requests', 'schedule_requests.id', '=', 's.id_schedule_request')
-                ->where('s.id_user', $id_user)
-                ->where('s.tanggal', $tanggal)
-                ->where('schedule_requests.status', 'Disetujui')
-                ->orderBy('sh.jam_masuk')
-                ->get();
+        $totalJamKerja = 0;
+        $totalTerlambat = 0;
 
-            if ($schedules->isEmpty()) continue;
+        $data = $data->map(function ($row) use (&$totalJamKerja, &$totalTerlambat) {
 
-            // ambil absensi hari ini + besok (untuk shift malam)
-            $absensis = array_merge(
-                $absensiByDate[$tanggal] ?? [],
-                $absensiByDate[date('Y-m-d', strtotime($tanggal . ' +1 day'))] ?? []
-            );
+            $jadwalMasuk = [
+                'Reguler' => '07:30:00',
+                'Sore'    => '16:00:00',
+                'Malam'   => '23:00:00'
+            ];
 
-            $usedScans = [];
+            // hitung keterlambatan
+            $terlambat = 0;
 
-            foreach ($schedules as $index => $sch) {
+            if ($row->jam_scan_masuk) {
 
-                // =========================
-                // HITUNG WINDOW WAKTU
-                // =========================
-                $shiftStart = new DateTime($tanggal . ' ' . $sch->jam_masuk);
+                $jamMasuk = Carbon::parse($row->jam_scan_masuk);
 
-                $shiftEndDate = $sch->jam_pulang < $sch->jam_masuk
-                    ? date('Y-m-d', strtotime($tanggal . ' +1 day'))
-                    : $tanggal;
+                $jadwal = Carbon::parse(
+                    $row->tanggal . ' ' . $jadwalMasuk[$row->shift]
+                );
 
-                $shiftEnd = new DateTime($shiftEndDate . ' ' . $sch->jam_pulang);
-
-                // window scan masuk
-                $scanMasukStart = new DateTime($tanggal . ' ' . $sch->mulai_scan_masuk);
-                $scanMasukEnd   = new DateTime($tanggal . ' ' . $sch->akhir_scan_masuk);
-
-                // window scan pulang
-                $scanPulangDate = $sch->mulai_scan_pulang < $sch->mulai_scan_masuk
-                    ? date('Y-m-d', strtotime($tanggal . ' +1 day'))
-                    : $tanggal;
-
-                $scanPulangStart = new DateTime($scanPulangDate . ' ' . $sch->mulai_scan_pulang);
-                $scanPulangEnd   = new DateTime($scanPulangDate . ' ' . $sch->akhir_scan_pulang);
-
-                $scanMasuk  = null;
-                $scanPulang = null;
-
-                // =========================
-                // SCAN MASUK
-                // =========================
-                foreach ($absensis as $i => $scan) {
-                    if (in_array($i, $usedScans)) continue;
-                    if ($scan >= $scanMasukStart && $scan <= $scanMasukEnd) {
-                        $scanMasuk = $scan;
-                        $usedScans[] = $i;
-                        break;
-                    }
+                if ($jamMasuk->gt($jadwal)) {
+                    $terlambat = $jamMasuk->diffInMinutes($jadwal);
                 }
-
-                // =========================
-                // SCAN PULANG
-                // =========================
-                foreach ($absensis as $i => $scan) {
-                    if (in_array($i, $usedScans)) continue;
-                    if ($scanMasuk && $scan <= $scanMasuk) continue;
-                    if ($scan >= $scanPulangStart && $scan <= $scanPulangEnd) {
-                        $scanPulang = $scan;
-                        $usedScans[] = $i;
-                        break;
-                    }
-                }
-
-                $nextSchedule = $schedules[$index + 1] ?? null;
-
-                $maxCheckoutTime = null;
-
-                if ($nextSchedule) {
-
-                    $nextShiftDate = $nextSchedule->tanggal;
-
-                    $maxCheckoutTime = new DateTime(
-                        $nextShiftDate . ' ' . $nextSchedule->jam_masuk
-                    );
-                }
-
-                // =========================
-                // FALLBACK 4 JAM
-                // =========================
-                if (!$scanPulang && $scanMasuk) {
-
-                    foreach ($absensis as $i => $scan) {
-
-                        if (in_array($i, $usedScans)) continue;
-
-                        // harus setelah scan masuk
-                        if ($scan <= $scanMasuk) continue;
-
-                        $selisihDetik = $scan->getTimestamp() - $scanMasuk->getTimestamp();
-
-                        // minimal 4 jam dan maksimal 12 jam
-                        // if ($selisihDetik >= (4 * 3600)) {
-
-                        //     $scanPulang = $scan;
-                        //     $usedScans[] = $i;
-
-                        //     break;
-                        // }
-
-                        if ($selisihDetik >= (4 * 3600) && $selisihDetik <= (12 * 3600)) {
-
-                            // jangan ambil scan milik shift berikutnya
-                            if ($maxCheckoutTime && $scan >= $maxCheckoutTime) {
-                                continue;
-                            }
-
-                            $scanPulang = $scan;
-                            $usedScans[] = $i;
-
-                            break;
-                        }
-                    }
-                }
-
-
-                // =========================
-                // HITUNG TERLAMBAT
-                // =========================
-                $terlambat = "00:00:00";
-
-                if ($scanMasuk) {
-                    if ($scanMasuk > $shiftStart) {
-                        $diff = $shiftStart->diff($scanMasuk);
-                        $terlambat = $diff->format('%H:%I:%S');
-                    }
-                }
-
-                // =========================
-                // HITUNG TOTAL JAM
-                // =========================
-                $totalJam = "00:00:00";
-
-                if ($scanMasuk && $scanPulang) {
-                    if ($scanPulang > $scanMasuk) {
-                        $diff = $scanMasuk->diff($scanPulang);
-                        $totalJam = $diff->format('%H:%I:%S');
-                    }
-                }
-
-                // =========================
-                // KETERANGAN ABSENSI
-                // =========================
-                $keterangan = 'Tidak Hadir';
-
-                if ($scanMasuk && $scanPulang) {
-                    $keterangan = 'Hadir';
-                } elseif ($scanMasuk && !$scanPulang) {
-                    $keterangan = 'Tidak absen pulang';
-                } elseif (!$scanMasuk && $scanPulang) {
-                    $keterangan = 'Tidak absen masuk';
-                }
-
-
-
-                // =========================
-                // SIMPAN HASIL
-                // =========================
-                $result[] = [
-                    'tanggal'      => $tanggal,
-                    'user'         => $sch->name,
-                    'shift'        => $sch->nama_shift,
-                    'scan_masuk'   => $scanMasuk ? $scanMasuk->format('H:i:s') : '',
-                    'scan_pulang'  => $scanPulang ? $scanPulang->format('H:i:s') : '',
-                    'terlambat'    => $terlambat,
-                    'total_jam'    => $totalJam,
-                    'keterangan'   => $keterangan,
-                ];
-            }
-        }
-
-        foreach ($result as $row) {
-
-            // TOTAL JAM KERJA
-            if (!empty($row['total_jam']) && $row['total_jam'] != "00:00:00") {
-                list($h, $m, $s) = explode(':', $row['total_jam']);
-                $totalDetikKerja += ($h * 3600) + ($m * 60) + $s;
             }
 
-            // TOTAL TERLAMBAT
-            if (!empty($row['terlambat']) && $row['terlambat'] != "00:00:00") {
-                list($h, $m, $s) = explode(':', $row['terlambat']);
-                $totalDetikTerlambat += ($h * 3600) + ($m * 60) + $s;
+            // hitung jam kerja
+            $jamKerja = 0;
+
+            if ($row->jam_scan_masuk && $row->jam_scan_pulang) {
+
+                $masuk = Carbon::parse($row->jam_scan_masuk);
+                $pulang = Carbon::parse($row->jam_scan_pulang);
+
+                // shift malam
+                if ($pulang->lt($masuk)) {
+                    $pulang->addDay();
+                }
+
+                $jamKerja = $masuk->diffInMinutes($pulang);
             }
 
-            // TOTAL HADIR
-            if (!empty($row['scan_masuk']) && !empty($row['scan_pulang'])) {
-                $totalHadir++;
-            }
-        }
+            $totalJamKerja += $jamKerja;
+            $totalTerlambat += $terlambat;
 
-        $totalShift = count($result);
+            return [
+                'tanggal' => $row->tanggal,
+                'nama_pegawai' => $row->nama_pegawai,
+                'shift' => $row->shift,
+                'jam_scan_masuk' => $row->jam_scan_masuk,
+                'jam_scan_pulang' => $row->jam_scan_pulang,
+                'total_terlambat' => gmdate('H:i', $terlambat * 60),
+                'total_jam_kerja' => gmdate('H:i', $jamKerja * 60)
+            ];
+        });
 
-        // dd($result);
+        $absensi = DB::table('absensis')
+            ->where('status_absensi', 'Diterima')
+
+            ->when($id_user, function ($q) use ($id_user) {
+                $q->where('user_id', $id_user);
+            })
+
+            ->when($start && $end, function ($q) use ($start, $end) {
+                $q->whereBetween(
+                    DB::raw('DATE(datetime)'),
+                    [$start, $end]
+                );
+            })
+
+            ->selectRaw("
+                SUM(CASE WHEN jenis_absensi = 'Masuk' THEN 1 ELSE 0 END) as total_absensi_masuk,
+                SUM(CASE WHEN jenis_absensi = 'Pulang' THEN 1 ELSE 0 END) as total_absensi_pulang
+            ")
+            ->first();
+
         return response()->json([
-            'data' => $result,
-            'summary' => [
-                'total_jam_kerja'   => $this->formatJam($totalDetikKerja),
-                'total_terlambat'   => $this->formatJam($totalDetikTerlambat),
-                'total_hadir'       => $totalHadir,
-                'total_shift'       => $totalShift,
-            ]
+            'widget' => [
+                'total_durasi_jam_kerja' => gmdate('H:i', $totalJamKerja * 60),
+                'total_durasi_terlambat' => gmdate('H:i', $totalTerlambat * 60),
+                'total_absensi_masuk' => $absensi->total_absensi_masuk ?? 0,
+                'total_absensi_pulang' => $absensi->total_absensi_pulang ?? 0
+            ],
+
+            'table' => $data
         ]);
+    }
+
+    public function opd(){
+
+        return view('backend.laporan.shift_opd.index');
+
+    }
+
+    public function dataOpd(Request $request)
+    {
+        $id_lokasi_kerja = $request->id_lokasi_kerja;
+        $start = $request->start;
+        $end = $request->end;
+
+        $data = DB::table('absensis as a')
+            ->join('users as u', 'u.id', '=', 'a.user_id')
+            ->join('detail_users as du', 'du.user_id', '=', 'u.id')
+            ->join('lokasi_kerja_users as lku', 'lku.id_user', '=', 'u.id')
+            ->select(
+                'u.id',
+                'u.name',
+                'du.nip',
+                DB::raw('DATE(a.datetime) as tanggal'),
+                'a.status_shift'
+            )
+            ->where('a.status_absensi', 'Diterima')
+            ->where('lku.id_lokasi_kerja', $id_lokasi_kerja)
+            ->whereBetween(
+                DB::raw('DATE(a.datetime)'),
+                [$start, $end]
+            )
+            ->groupBy(
+                'u.id',
+                'u.name',
+                DB::raw('DATE(a.datetime)'),
+                'a.status_shift'
+            )
+            ->get();
+
+        $mapShift = [
+            'Reguler' => 'R',
+            'Sore'    => 'S',
+            'Malam'   => 'M'
+        ];
+
+        // daftar tanggal
+        $tanggalList = [];
+
+        foreach (CarbonPeriod::create($start, $end) as $tanggal) {
+            $tanggalList[] = $tanggal->format('Y-m-d');
+        }
+
+        $result = [];
+
+        foreach ($data as $row) {
+
+            $tgl = $row->tanggal;
+
+            if (!isset($result[$row->id])) {
+
+                $result[$row->id] = [
+                    'nama' => $row->name,
+                    'nip' => $row->nip
+                ];
+
+                foreach ($tanggalList as $tanggal) {
+                    $result[$row->id][$tanggal] = '';
+                }
+            }
+
+            $singkatan = $mapShift[$row->status_shift];
+
+            if ($result[$row->id][$tgl] == '') {
+                $result[$row->id][$tgl] = $singkatan;
+            } else {
+                $result[$row->id][$tgl] .= ',' . $singkatan;
+            }
+        }
+
+        return response()->json(array_values($result));
     }
 }

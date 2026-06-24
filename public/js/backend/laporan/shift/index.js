@@ -58,18 +58,28 @@ function getData() {
             url: '/data-laporan-shift',
             dataSrc: function (json) {
 
-                // fallback biar gak error
-                if (!json.summary) {
-                    console.error("Summary tidak ada:", json);
-                    return json.data ?? json;
+                if (!json.widget) {
+                    console.error("Widget tidak ditemukan", json);
+                    return [];
                 }
 
-                $("#totalJamKerja").text(json.summary.total_jam_kerja || "00:00:00");
-                $("#totalTerlambat").text(json.summary.total_terlambat || "00:00:00");
-                $("#totalHadir").text(json.summary.total_hadir || 0);
-                $("#totalShift").text(json.summary.total_shift || 0);
+                $("#totalJamKerja").text(
+                    json.widget.total_durasi_jam_kerja || "00:00"
+                );
 
-                return json.data;
+                $("#totalTerlambat").text(
+                    json.widget.total_durasi_terlambat || "00:00"
+                );
+
+                $("#totalMasuk").text(
+                    json.widget.total_absensi_masuk || 0
+                );
+
+                $("#totalPulang").text(
+                    json.widget.total_absensi_pulang || 0
+                );
+
+                return json.table;
             },
             data: function (d) {
                 d.id_user = $("#idUserSearch").val();
@@ -79,71 +89,71 @@ function getData() {
         },
         createdRow: function (row, data) {
 
-            // Kolom Terlambat (misal index kolom = 3)
-            if (data.terlambat && data.terlambat !== "00:00:00") {
+            if (
+                data.total_terlambat &&
+                data.total_terlambat !== "00:00"
+            ) {
                 $('td', row).eq(5).addClass('bg-danger text-white');
-            }
-
-            // Kolom Pulang Cepat (misal index kolom = 4)
-            if (data.pulang_cepat && data.pulang_cepat !== "00:00:00") {
-                $('td', row).eq(6).addClass('bg-danger text-white');
             }
 
         },
         columns: [
             {
-                render: (data, type, row) => `
-                    <b class="d-md-none">Tanggal: </b>
-                    <br class="d-md-none"> ${row.tanggal}`
+                data: "tanggal"
             },
             {
-                render: (data, type, row) => `
-                    <span style="white-space: nowrap;"><b class="d-md-none">Pegawai: </b>
-                    <br class="d-md-none"> ${row.user}</span>`
+                data: "nama_pegawai"
             },
             {
-                render: (data, type, row) => `
-                    <span style="white-space: nowrap;"><b class="d-md-none">Shift: </b>
-                    <br class="d-md-none"> ${row.shift}</span>`
+                data: "shift"
             },
             {
-                render: (data, type, row) => {
-                    const waktu = row.scan_masuk ? row.scan_masuk.split(" ")[1] : "";
+                render: function (data, type, row) {
+
+                    let waktu = "";
+
+                    if (row.jam_scan_masuk) {
+                        waktu = row.jam_scan_masuk.split(" ")[1];
+                    }
+
                     return `
-                        <b class="d-md-none">Scan Masuk: </b>
-                        <br class="d-md-none"> ${row.scan_masuk}
-                    `;
+                <b class="d-md-none">Scan Masuk:</b>
+                <br class="d-md-none">
+                ${waktu}
+            `;
                 }
             },
             {
-                render: (data, type, row) => {
-                    const waktu1 = row.scan_pulang ? row.scan_pulang.split(" ")[1] : "";
+                render: function (data, type, row) {
+
+                    let waktu = "";
+
+                    if (row.jam_scan_pulang) {
+                        waktu = row.jam_scan_pulang.split(" ")[1];
+                    }
+
                     return `
-                        <b class="d-md-none">Scan Masuk: </b>
-                        <br class="d-md-none"> ${row.scan_pulang}
-                    `;
+                <b class="d-md-none">Scan Pulang:</b>
+                <br class="d-md-none">
+                ${waktu}
+            `;
                 }
             },
             {
-                render: (data, type, row) => `
-                    <b class="d-md-none">Terlambat: </b>
-                    <br class="d-md-none"> ${row.terlambat}`
+                data: "total_terlambat"
+            },
+            {
+                data: "total_jam_kerja"
             },
             // {
-            //     render: (data, type, row) => `
-            //         <b class="d-md-none">Pulang Cepat: </b>
-            //         <br class="d-md-none"> ${row.pulang_cepat}`
-            // },
-            {
-                render: (data, type, row) => `
-                    <b class="d-md-none">Total Jam: </b>
-                    <br class="d-md-none"> ${row.total_jam}`
-            },
-            {
-                render: (data, type, row) => `
-                    <b class="d-md-none">Keterangan: </b>
-                    <br class="d-md-none"> ${row.keterangan}`
-            }
-        ],
+            //     render: function(data, type, row){
+            //         if(row.total_jam_kerja === "00:00"){
+            //             return `Invalid`
+            //         }else{
+            //             return `Valid`
+            //         }
+            //     }
+            // }
+        ]
     });
 }
