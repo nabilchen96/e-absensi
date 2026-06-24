@@ -168,8 +168,12 @@ class AbsensiController extends Controller
                     $statusShift = 'Sore';
                 }
 
-                else {
+                elseif ($jam >= '00:00:00' && $jam < '07:00:00') {
                     $statusShift = 'Malam';
+                } 
+
+                else{
+                    $statusShift = 'Shift Tidak Diketahui';
                 }
             }
 
@@ -194,7 +198,11 @@ class AbsensiController extends Controller
                 ) {
                     $statusShift = 'Malam';
                 }
-            }
+
+                else{
+                    $statusShift = 'Shift Tidak Diketahui';
+                }  
+            } 
 
 
 

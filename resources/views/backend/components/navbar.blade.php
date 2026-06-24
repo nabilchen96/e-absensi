@@ -79,12 +79,12 @@
                     <span class="menu-title">Schedule</span>
                 </a>
             </li> --}}
-            <li class="nav-item">
+            {{-- <li class="nav-item">
                 <a class="nav-link" href="{{ url('schedule-request') }}">
                     <i class="icon-grid bi bi-calendar-plus menu-icon"></i>
                     <span class="menu-title">Schedule</span>
                 </a>
-            </li>
+            </li> --}}
         @endif
         <li class="nav-item">
             <a class="nav-link" data-toggle="collapse" href="#aktivitas" aria-expanded="false" aria-controls="ui-basic">
